@@ -1,7 +1,7 @@
 // Service worker for offline use. It caches this site's own files and nothing else.
 // It never sees pasted text: the page sends nothing anywhere, so there is nothing to intercept.
 // Its own CSP (public/_headers) allows connect-src 'self' only, so it can refresh these files and nothing more.
-const CACHE = 'pastesafe-v5';
+const CACHE = 'pastesafe-v6';
 const FILES = [
   '/',
   '/styles.css',
@@ -9,6 +9,9 @@ const FILES = [
   '/fonts/ibm-plex-sans-latin.woff2',
   '/fonts/jetbrains-mono-latin.woff2',
   '/favicon.svg',
+  '/favicon.ico',
+  '/favicon-96.png',
+  '/apple-touch-icon.png',
   '/og.png',
   '/robots.txt',
   '/sitemap.xml',
