@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PasteSafe: clean logs before you paste them into AI</title>
 <meta name="description" content="Mask API keys, passwords and customer data in logs and configs before they go into ChatGPT, GitHub or Slack. Runs entirely in your browser. Nothing is uploaded.">
-<meta name="theme-color" content="#f5f6f3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0c1210" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="adunit.css">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PasteSafe">
 <meta property="og:title" content="PasteSafe: clean it before you paste it">
@@ -24,152 +27,274 @@
 <script type="module" src="js/app.js"></script>
 </head>
 <body>
-<a class="skip" href="#input">Skip to the tool</a>
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-paste" viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16" rx="2"/><path d="M9 5V3.5h6V5M9 11h6M9 15h4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-again" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></symbol>
+  <symbol id="i-clear" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-wrap" viewBox="0 0 24 24"><path d="M4 6h16M4 12h13a3 3 0 0 1 0 6h-4M15 16l-2 2 2 2M4 18h5"/></symbol>
+  <symbol id="i-net" viewBox="0 0 24 24"><path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3 9a13 13 0 0 1 18 0M6.5 12.5a8 8 0 0 1 11 0M10 16a3 3 0 0 1 4 0M12 19.5h.01"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M10.5 20.5 12 16l-7-2v-2l7-1V5.5a1.5 1.5 0 0 1 3 0V11l7 1v2l-7 2 1.5 4.5L15 21l-1.5-1-1.5 1z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6zM9 12l2 2 4-4"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5M5 17h14v3H5z"/></symbol>
+  <symbol id="i-term" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M12.5 15H17"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6M15.5 9h.01"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></symbol>
+</svg>
 
-<header class="wrap top">
-  <a class="brand" href="./">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0b6e4f"/><rect x="7" y="8" width="18" height="3" rx="1.5" fill="#fff"/><rect x="7" y="14.5" width="7" height="3" rx="1.5" fill="#fff"/><rect x="16" y="13.5" width="9" height="5" rx="1.5" fill="#8fe3b8"/><rect x="7" y="21" width="12" height="3" rx="1.5" fill="#fff"/></svg>
-    PasteSafe
-  </a>
-  <p class="pill">0 bytes uploaded</p>
-</header>
+<a class="skip" href="#input">Skip to the editor</a>
 
-<div class="wrap hero">
-  <h1>Clean it before you paste it.</h1>
-  <p class="sub">Mask API keys, passwords and customer data in logs and configs before they go into ChatGPT, GitHub or Slack. Runs entirely in your browser.</p>
+<div class="shell">
+<div class="page">
+  <header class="top">
+    <a class="brand" href="./">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>
+      PasteSafe
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a class="nav-wide" href="#restore">Restore values</a>
+      <a href="#check">Check it yourself</a>
+      <a class="nav-wide" href="#about">How it works</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>Clean it before you paste it.</h1>
+      <p class="sub">Mask API keys, passwords and customer data in logs and configs before they go into ChatGPT, GitHub or Slack. Runs entirely in your browser.</p>
+    </div>
+
+    <section class="workbench" aria-labelledby="tool-title">
+      <h2 id="tool-title" class="visually-hidden">Editor</h2>
+      <noscript><p class="notice">PasteSafe needs JavaScript to scan. The code runs on your device and nothing is uploaded.</p></noscript>
+
+      <div class="ed-col">
+        <div class="editor window is-wrap" id="editor" data-state="empty" data-view="original">
+          <div class="win-bar">
+            <span class="win-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="file-tab"><svg class="i" aria-hidden="true"><use href="#i-file"/></svg><span id="file-name">paste.log</span></span>
+            <div class="win-tools">
+              <div class="tabs" role="tablist" aria-label="View">
+                <button type="button" role="tab" class="tab" id="tab-cleaned" aria-controls="panel-cleaned" aria-selected="false" tabindex="-1">Cleaned</button>
+                <button type="button" role="tab" class="tab" id="tab-original" aria-controls="panel-original" aria-selected="true">Original</button>
+              </div>
+              <button type="button" class="icon-btn" id="wrap" aria-pressed="true" title="Wrap long lines"><svg class="i" aria-hidden="true"><use href="#i-wrap"/></svg><span class="visually-hidden">Wrap long lines</span></button>
+            </div>
+          </div>
+
+          <div class="ed-body" id="ed-body">
+            <div class="ed-panel" id="panel-original" role="tabpanel" aria-labelledby="tab-original">
+              <label class="visually-hidden" for="input">Original text. Paste a log, stack trace, config or .env file.</label>
+              <textarea id="input" class="code-area" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-describedby="status"></textarea>
+            </div>
+            <div class="ed-panel" id="panel-cleaned" role="tabpanel" aria-labelledby="tab-cleaned" hidden>
+              <pre id="cleaned" class="code-pre" tabindex="0" aria-label="Cleaned text"></pre>
+              <div id="big" class="big" hidden>
+                <p class="big-note" id="big-note"></p>
+                <label class="visually-hidden" for="cleaned-big">Cleaned text</label>
+                <textarea id="cleaned-big" class="code-area" readonly spellcheck="false"></textarea>
+              </div>
+            </div>
+
+            <div class="ed-empty" id="empty">
+              <p class="typer" aria-hidden="true"><span class="typer-prompt">&gt;</span> <span id="typer">Paste your log or config</span><span class="caret"></span></p>
+              <p class="empty-hint">Press <kbd class="kbd-mod">Ctrl</kbd> <kbd>V</kbd> anywhere on this page, or:</p>
+              <div class="empty-actions">
+                <button type="button" class="btn btn-primary" id="paste-btn"><svg class="i" aria-hidden="true"><use href="#i-paste"/></svg>Paste from clipboard</button>
+                <button type="button" class="btn btn-ghost" data-action="sample"><svg class="i" aria-hidden="true"><use href="#i-file"/></svg>Try a sample log</button>
+              </div>
+              <p class="empty-drop"><svg class="i" aria-hidden="true"><use href="#i-drop"/></svg>Or drop a text file here. It is read on your device.</p>
+              <p class="empty-msg" id="empty-msg" role="status"></p>
+            </div>
+
+            <div class="ed-beam" id="beam" aria-hidden="true"></div>
+            <div class="ed-progress" aria-hidden="true"><i></i></div>
+            <div class="ed-drop" aria-hidden="true"><svg class="i" aria-hidden="true"><use href="#i-drop"/></svg>Drop to clean it</div>
+          </div>
+
+          <div class="win-status">
+            <span class="st-group">
+              <span id="st-lines">0 lines</span>
+              <span id="st-size">0 B</span>
+              <span class="st-masked" id="st-masked" aria-hidden="true">0 masked</span>
+            </span>
+            <span class="st-group st-privacy">
+              <span class="st-net" id="st-net"><svg class="i" aria-hidden="true"><use href="#i-net"/></svg><span>0 requests</span></span>
+              <span class="st-conn" id="st-conn"><svg class="i" aria-hidden="true"><use href="#i-wifi"/></svg><span>Online</span></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="ed-actions" id="actions">
+          <button type="button" class="btn btn-primary btn-lg" id="copy" disabled>
+            <svg class="i i-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="i i-done" aria-hidden="true"><use href="#i-check"/></svg><span class="lbl">Copy<span class="lbl-long"> cleaned text</span></span><span class="lbl-done">Copied</span>
+          </button>
+          <div class="ed-secondary">
+            <button type="button" class="btn btn-ghost" id="again" disabled><svg class="i" aria-hidden="true"><use href="#i-again"/></svg><span class="btn-text">Clean again</span></button>
+            <button type="button" class="btn btn-ghost" data-action="sample"><svg class="i" aria-hidden="true"><use href="#i-file"/></svg><span class="btn-text">Sample</span></button>
+            <button type="button" class="btn btn-ghost" id="clear" disabled><svg class="i" aria-hidden="true"><use href="#i-clear"/></svg><span class="btn-text">Clear</span></button>
+          </div>
+        </div>
+        <p class="status" id="status" role="status">Paste something to start. Scanning starts as soon as text arrives.</p>
+        <p class="limits">Known key formats are caught reliably. Plain passwords and names can slip through. Review before you paste.</p>
+        <p class="visually-hidden" id="announce" role="status"></p>
+      </div>
+
+      <aside class="findings" id="findings" aria-labelledby="findings-title">
+        <div class="findings-head">
+          <h3 id="findings-title">Findings</h3>
+          <span class="badge" id="findings-total" hidden></span>
+        </div>
+        <fieldset id="toggles">
+          <legend>Mask these</legend>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" value="keys" checked><span>API keys and tokens</span><span class="count" data-count="keys"></span></label>
+            <label class="chip"><input type="checkbox" value="privateKeys" checked><span>Private keys</span><span class="count" data-count="privateKeys"></span></label>
+            <label class="chip"><input type="checkbox" value="passwords" checked><span>Passwords and secrets</span><span class="count" data-count="passwords"></span></label>
+            <label class="chip"><input type="checkbox" value="email" checked><span>Emails</span><span class="count" data-count="email"></span></label>
+            <label class="chip"><input type="checkbox" value="ip" checked><span>IP addresses</span><span class="count" data-count="ip"></span></label>
+            <label class="chip"><input type="checkbox" value="card" checked><span>Card numbers</span><span class="count" data-count="card"></span></label>
+            <label class="chip"><input type="checkbox" value="iban" checked><span>IBANs</span><span class="count" data-count="iban"></span></label>
+            <label class="chip"><input type="checkbox" value="phone" checked><span>Phone numbers</span><span class="count" data-count="phone"></span></label>
+          </div>
+        </fieldset>
+        <div id="list" class="list"></div>
+        <p id="list-empty" class="empty">Each masked value shows up here. Pick one to jump to it in the text.</p>
+      </aside>
+    </section>
+
+    <section class="section" id="restore" aria-labelledby="restore-title">
+      <div class="section-head">
+        <h2 id="restore-title">Put the real values back</h2>
+        <p class="lead">Paste the AI's reply. Placeholders like <code>EMAIL_1</code> turn back into the real values, right here in this tab.</p>
+      </div>
+      <div class="pair">
+        <div class="window">
+          <div class="win-bar">
+            <span class="file-tab"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg><label for="reply">AI reply with placeholders</label></span>
+          </div>
+          <textarea id="reply" class="code-area roomy" spellcheck="false" autocomplete="off" placeholder="Paste the answer from ChatGPT, Claude or Copilot."></textarea>
+        </div>
+        <div class="window">
+          <div class="win-bar">
+            <span class="file-tab"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><label for="restored">Reply with real values</label></span>
+            <div class="win-tools">
+              <button type="button" class="btn btn-ghost btn-sm" data-copy="restored"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg><span class="lbl">Copy</span><span class="lbl-done">Copied</span></button>
+            </div>
+          </div>
+          <textarea id="restored" class="code-area roomy" readonly spellcheck="false"></textarea>
+        </div>
+      </div>
+      <p class="status" id="restore-note" role="status"></p>
+    </section>
+
+    <section class="section" id="share" aria-labelledby="share-title">
+      <div class="section-head">
+        <h2 id="share-title">Show your team what you caught</h2>
+        <p class="lead">Make an image with counts only. It never contains your text, and it is drawn right here in the page.</p>
+      </div>
+      <button type="button" class="btn btn-ghost" id="make-card" disabled><svg class="i" aria-hidden="true"><use href="#i-image"/></svg>Make a share image</button>
+      <div id="card-out" class="card-out" hidden>
+        <div class="card-preview window" id="card-preview"></div>
+        <div class="card-side">
+          <a class="btn btn-primary" id="download" download="pastesafe-scan.png" href="#share"><svg class="i" aria-hidden="true"><use href="#i-save"/></svg>Download PNG</a>
+          <div class="window">
+            <div class="win-bar">
+              <span class="file-tab"><label for="linkedin">Text for LinkedIn</label></span>
+              <div class="win-tools">
+                <button type="button" class="btn btn-ghost btn-sm" data-copy="linkedin"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg><span class="lbl">Copy text</span><span class="lbl-done">Copied</span></button>
+              </div>
+            </div>
+            <textarea id="linkedin" class="prose-area" readonly></textarea>
+          </div>
+          <p class="tip" id="share-tip">Tip: upload the image natively, and put the link in the first comment.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="check" aria-labelledby="check-title">
+      <div class="section-head">
+        <h2 id="check-title">Check it yourself</h2>
+        <p class="lead">Do not take our word for it. These readings are live, and each one comes with a way to test it without this page.</p>
+      </div>
+      <div class="checks">
+        <article class="check" id="check-net" data-state="ok">
+          <h3><svg class="i" aria-hidden="true"><use href="#i-net"/></svg>Network requests</h3>
+          <p class="meter"><span class="meter-n" id="net-count">0</span><span class="meter-label">network requests from this page since it loaded</span></p>
+          <ul class="net-list" id="net-list" hidden></ul>
+          <p>Counts every request this page makes once it has fully loaded, with its scan worker, fonts and ad logos. Open DevTools (F12, or Cmd+Option+I on a Mac), pick the <b>Network</b> tab, then paste, restore and make a share image. The list stays empty.</p>
+        </article>
+        <article class="check" id="check-conn" data-state="online">
+          <h3><svg class="i" aria-hidden="true"><use href="#i-wifi"/></svg>Connection</h3>
+          <p class="conn" id="conn"><svg class="i conn-online" aria-hidden="true"><use href="#i-wifi"/></svg><svg class="i conn-offline" aria-hidden="true"><use href="#i-plane"/></svg><span id="conn-text">Online. Turn off Wi-Fi and paste again: it keeps working.</span></p>
+          <p class="sw-state" id="sw-state" data-ready="false"><svg class="i" aria-hidden="true"><use href="#i-save"/></svg><span id="sw-text">Offline copy not ready yet.</span></p>
+          <p>Switch on airplane mode and paste the sample again. Once the offline copy is saved, you can even reload the page with no connection.</p>
+        </article>
+        <article class="check check-wide">
+          <h3><svg class="i" aria-hidden="true"><use href="#i-term"/></svg>The security header</h3>
+          <p>The server tells your browser to block every connection this page tries to make, even if the code tried. Check the header from a terminal:</p>
+          <pre class="code-block"><code><span class="cb-prompt">$</span> <span id="curl-cmd">curl -I https://your-domain/</span>
+<span class="cb-muted">content-security-policy:</span> default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; <mark class="cb-hit">connect-src 'none'</mark>; font-src 'self'; frame-ancestors 'none'; form-action 'none'; base-uri 'none'</code></pre>
+        </article>
+        <article class="check check-wide">
+          <h3><svg class="i" aria-hidden="true"><use href="#i-code"/></svg>The code</h3>
+          <p>There is no build step. The scanner is <a href="js/detect.js">js/detect.js</a>, the page logic is <a href="js/app.js">js/app.js</a>, and the whole project is <a href="https://github.com/qxZap/pastesafe">on GitHub</a>.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="why" aria-labelledby="why-title">
+      <div class="section-head">
+        <h2 id="why-title">Why clean before you paste</h2>
+      </div>
+      <ul class="stats">
+        <li><b>28.65M</b> new secrets leaked in public GitHub commits in 2025, up 34%. Leaked AI service keys rose 81%.
+          <a class="src" href="https://blog.gitguardian.com/the-state-of-secrets-sprawl-2026/">GitGuardian, State of Secrets Sprawl 2026</a></li>
+        <li><b>77%</b> of enterprise AI users paste data into chatbots, and 22% of those pastes contain personal or payment data.
+          <a class="src" href="https://www.theregister.com/2025/10/07/gen_ai_shadow_it_secrets">LayerX 2025, via The Register</a></li>
+        <li><b>80,000+</b> saved pastes with credentials were exposed by jsonformatter.org and codebeautify.org in November 2025. Leaked AWS keys were tried within 48 hours.
+          <a class="src" href="https://labs.watchtowr.com/stop-putting-your-passwords-into-random-websites-yes-seriously-you-are-the-problem/">watchTowr Labs</a></li>
+        <li><b>May 2023</b> Samsung banned generative AI tools for staff after engineers pasted source code into ChatGPT.
+          <a class="src" href="https://techcrunch.com/2023/05/02/samsung-bans-use-of-generative-ai-tools-like-chatgpt-after-april-internal-data-leak/">TechCrunch</a></li>
+      </ul>
+    </section>
+
+    <section class="section prose" id="about" aria-labelledby="about-title">
+      <h2 id="about-title">How it works</h2>
+      <p>Your text goes to a Web Worker, a background thread inside this tab, so even a 5 MB log does not freeze the page. It runs the <a href="https://github.com/gitleaks/gitleaks">gitleaks</a> secret rules (more than 200 formats, from AWS and GitHub to Stripe and Slack), plus checks for private key blocks, JWTs, Bearer headers, passwords in URLs and connection strings, <code>.env</code> lines, emails, IP addresses, card numbers (Luhn check), IBANs (checksum) and phone numbers.</p>
+      <p>The worker has no network code at all, and it is served with the same security header as the page, so the browser would block a connection from it anyway.</p>
+      <p>Each unique value gets a stable placeholder such as <code>AWS_ACCESS_KEY_1</code> or <code>EMAIL_2</code>, so the AI's answer still makes sense. The table that maps placeholders back to real values lives only in this tab's memory. Nothing is saved: no cookies, no local storage, no accounts. Close the tab and it is gone.</p>
+      <h3>The service worker</h3>
+      <p>A small service worker (<a href="sw.js">sw.js</a>) keeps a copy of this site's own files in your browser, so the page can load without a connection. It only requests files from this same site, and it never sees your text, because the page never sends your text anywhere. The connection panel above tells you when that copy is saved.</p>
+      <p>To download those files, sw.js needs a slightly different security header than the page: <code>connect-src 'self'</code>, which allows requests to this site only. The page itself keeps <code>connect-src 'none'</code>.</p>
+      <h3>Limits</h3>
+      <p>Known key formats are caught reliably. Plain passwords, names and street addresses in free text can slip through. Read the cleaned text before you paste it.</p>
+      <p>There is no analytics script. Visitor numbers come from the hosting dashboard, which needs nothing on the page. The ads are plain links to our own apps, with their logos served from this site.</p>
+    </section>
+
+    <section class="team" aria-labelledby="team-title">
+      <div>
+        <h2 id="team-title">Send this to your team instead of banning AI.</h2>
+        <p>Bans push people to paste in secret. A cleaner that runs in the browser keeps them using AI, and keeps keys and customer data out of it.</p>
+      </div>
+      <button type="button" class="btn btn-primary" id="copy-link"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg><span class="lbl">Copy link for your team</span><span class="lbl-done">Link copied</span></button>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>PasteSafe is open source under the MIT License. Secret rules from <a href="https://github.com/gitleaks/gitleaks">gitleaks</a> by Zachary Rice, MIT License. Fonts: JetBrains Mono and IBM Plex Sans, SIL Open Font License.</p>
+  </footer>
 </div>
 
-<main class="wrap layout">
-  <section class="panel tool" aria-labelledby="tool-title">
-    <h2 id="tool-title" class="visually-hidden">Clean your text</h2>
-    <noscript><p class="notice">PasteSafe needs JavaScript to scan. The code runs on your device and nothing is uploaded.</p></noscript>
-    <div class="panes">
-      <div class="pane">
-        <div class="pane-head">
-          <label for="input">Paste a log or config</label>
-          <span class="actions">
-            <button type="button" class="btn quiet" id="sample">Try a sample log</button>
-            <button type="button" class="btn quiet" id="clear">Clear</button>
-          </span>
-        </div>
-        <textarea id="input" wrap="off" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Paste here. Nothing leaves this tab."></textarea>
-        <p class="status" id="status" role="status">Paste text or try the sample. Scanning starts as you type.</p>
-      </div>
-      <div class="pane">
-        <div class="pane-head">
-          <label for="output">Cleaned text</label>
-          <button type="button" class="btn" data-copy="output">Copy</button>
-        </div>
-        <textarea id="output" wrap="off" readonly spellcheck="false" placeholder="Cleaned text shows up here."></textarea>
-        <p class="limits">Known key formats are caught reliably. Plain passwords and names can slip through. Review before you paste.</p>
-      </div>
-    </div>
+<aside id="ad-slot" class="ad-slot" aria-label="Advertisement"></aside>
+</div>
 
-    <div class="findings">
-      <fieldset id="toggles">
-        <legend>Mask these</legend>
-        <div class="chips">
-          <label class="chip"><input type="checkbox" value="keys" checked> API keys and tokens <span class="count" data-count="keys"></span></label>
-          <label class="chip"><input type="checkbox" value="privateKeys" checked> Private keys <span class="count" data-count="privateKeys"></span></label>
-          <label class="chip"><input type="checkbox" value="passwords" checked> Passwords and secrets <span class="count" data-count="passwords"></span></label>
-          <label class="chip"><input type="checkbox" value="email" checked> Emails <span class="count" data-count="email"></span></label>
-          <label class="chip"><input type="checkbox" value="ip" checked> IP addresses <span class="count" data-count="ip"></span></label>
-          <label class="chip"><input type="checkbox" value="card" checked> Card numbers <span class="count" data-count="card"></span></label>
-          <label class="chip"><input type="checkbox" value="iban" checked> IBANs <span class="count" data-count="iban"></span></label>
-          <label class="chip"><input type="checkbox" value="phone" checked> Phone numbers <span class="count" data-count="phone"></span></label>
-        </div>
-      </fieldset>
-      <div id="list" class="list"></div>
-      <p id="list-empty" class="empty">Findings are listed here. Click one to jump to it in your text.</p>
-    </div>
-  </section>
-
-  <aside class="makers" aria-labelledby="makers-title">
-    <h2 id="makers-title">From the makers</h2>
-    <ul id="makers"></ul>
-  </aside>
-
-  <section class="panel" id="restore" aria-labelledby="restore-title">
-    <h2 id="restore-title">Put the real values back</h2>
-    <p class="lead">Paste the AI's reply. Placeholders like <code>EMAIL_1</code> turn back into the real values, right here in this tab.</p>
-    <div class="panes">
-      <div class="pane">
-        <div class="pane-head"><label for="reply">AI reply with placeholders</label></div>
-        <textarea id="reply" class="short" spellcheck="false" autocomplete="off" placeholder="Paste the answer from ChatGPT, Claude or Copilot."></textarea>
-      </div>
-      <div class="pane">
-        <div class="pane-head">
-          <label for="restored">Reply with real values</label>
-          <button type="button" class="btn" data-copy="restored">Copy</button>
-        </div>
-        <textarea id="restored" class="short" readonly spellcheck="false"></textarea>
-        <p class="status" id="restore-note" role="status"></p>
-      </div>
-    </div>
-  </section>
-
-  <section class="panel" id="share" aria-labelledby="share-title">
-    <h2 id="share-title">Show your team what you caught</h2>
-    <p class="lead">Make an image with counts only. It never contains your text, and it is drawn right here in the page.</p>
-    <button type="button" class="btn" id="make-card" disabled>Make a share image</button>
-    <div id="card-out" class="card-out" hidden>
-      <div id="card-preview"></div>
-      <p><a class="btn" id="download" download="pastesafe-scan.png" href="#share">Download PNG</a></p>
-      <div class="pane-head">
-        <label for="linkedin">Text for LinkedIn</label>
-        <button type="button" class="btn quiet" data-copy="linkedin">Copy text</button>
-      </div>
-      <textarea id="linkedin" class="short prose" readonly></textarea>
-      <p class="tip" id="share-tip">Tip: upload the image natively, and put the link in the first comment.</p>
-    </div>
-  </section>
-
-  <section class="section" id="why" aria-labelledby="why-title">
-    <h2 id="why-title">Why clean before you paste</h2>
-    <ul class="stats">
-      <li><b>28.65M</b> new secrets leaked in public GitHub commits in 2025, up 34%. Leaked AI service keys rose 81%.
-        <a class="src" href="https://blog.gitguardian.com/the-state-of-secrets-sprawl-2026/">GitGuardian, State of Secrets Sprawl 2026</a></li>
-      <li><b>77%</b> of enterprise AI users paste data into chatbots, and 22% of those pastes contain personal or payment data.
-        <a class="src" href="https://www.theregister.com/2025/10/07/gen_ai_shadow_it_secrets">LayerX 2025, via The Register</a></li>
-      <li><b>80,000+</b> saved pastes with credentials were exposed by jsonformatter.org and codebeautify.org in November 2025. Leaked AWS keys were tried within 48 hours.
-        <a class="src" href="https://labs.watchtowr.com/stop-putting-your-passwords-into-random-websites-yes-seriously-you-are-the-problem/">watchTowr Labs</a></li>
-      <li><b>May 2023</b> Samsung banned generative AI tools for staff after engineers pasted source code into ChatGPT.
-        <a class="src" href="https://techcrunch.com/2023/05/02/samsung-bans-use-of-generative-ai-tools-like-chatgpt-after-april-internal-data-leak/">TechCrunch</a></li>
-    </ul>
-  </section>
-
-  <section class="section" id="verify" aria-labelledby="verify-title">
-    <h2 id="verify-title">Verify it yourself</h2>
-    <ol class="steps">
-      <li>Open DevTools (F12, or Cmd+Option+I on a Mac) and pick the <b>Network</b> tab. Paste a log, restore a reply, make a share image. No new requests appear.</li>
-      <li>Turn off Wi-Fi or switch on airplane mode, then reload. The page still loads and scans.</li>
-      <li>Check the security header with <code>curl -I</code> on this page. <code>connect-src 'none'</code> tells your browser to block every connection from the page, even if the code tried to make one.</li>
-      <li>Read the code: the scanner is <a href="js/detect.js">js/detect.js</a>, the page logic is <a href="js/app.js">js/app.js</a>, and the whole project is <a href="https://github.com/qxZap/pastesafe">on GitHub</a>.</li>
-    </ol>
-  </section>
-
-  <section class="section" id="about" aria-labelledby="about-title">
-    <h2 id="about-title">About</h2>
-    <h3>How it works</h3>
-    <p>Your text goes to a Web Worker, a background thread inside this tab, so even a 5 MB log does not freeze the page. It runs the <a href="https://github.com/gitleaks/gitleaks">gitleaks</a> secret rules (more than 200 formats, from AWS and GitHub to Stripe and Slack), plus checks for private key blocks, JWTs, Bearer headers, passwords in URLs and connection strings, <code>.env</code> lines, emails, IP addresses, card numbers (Luhn check), IBANs (checksum) and phone numbers.</p>
-    <p>Each unique value gets a stable placeholder such as <code>AWS_ACCESS_KEY_1</code> or <code>EMAIL_2</code>, so the AI's answer still makes sense. The table that maps placeholders back to real values lives only in this tab's memory. Nothing is saved: no cookies, no local storage, no accounts. Close the tab and it is gone.</p>
-    <h3>Offline, and the service worker</h3>
-    <p>After your first visit, a small service worker (<a href="sw.js">sw.js</a>) keeps a copy of this site's own files in your browser, so PasteSafe works in airplane mode. It only requests files from this same site, and it never sees your text, because the page never sends your text anywhere.</p>
-    <p>To download those files, sw.js needs a slightly different security header than the page: <code>connect-src 'self'</code>, which allows requests to this site only. The page itself keeps <code>connect-src 'none'</code>.</p>
-    <h3>Limits</h3>
-    <p>Known key formats are caught reliably. Plain passwords, names and street addresses in free text can slip through. Read the cleaned text before you paste it.</p>
-    <p>There is no analytics script. Visitor numbers come from the hosting dashboard, which needs nothing on the page.</p>
-  </section>
-
-  <section class="panel team" aria-labelledby="team-title">
-    <h2 id="team-title">Send this to your team instead of banning AI.</h2>
-    <p>Bans push people to paste in secret. A cleaner that runs in the browser keeps them using AI, and keeps keys and customer data out of it.</p>
-    <button type="button" class="btn" id="copy-link">Copy link for your team</button>
-  </section>
-</main>
-
-<footer class="wrap foot">
-  <p>PasteSafe is open source under the MIT License. Secret rules from <a href="https://github.com/gitleaks/gitleaks">gitleaks</a> by Zachary Rice, MIT License.</p>
-</footer>
+<div class="toast" id="toast" role="status" hidden><span id="toast-text"></span><button type="button" class="btn btn-ghost btn-sm" id="undo">Undo</button></div>
 </body>
 </html>
