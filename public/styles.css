@@ -66,7 +66,7 @@
   --r-lg: 14px;
   --r-full: 999px;
 
-  /* z-index: page UI stays below the ad anchor (adunit.css uses 40); only the toast and skip link go above it */
+  /* z-index: page UI stays below the ad anchor (showcase.css uses 40); only the toast and skip link go above it */
   --z-raise: 1;
   --z-overlay: 5;
   --z-toast: 50;
@@ -167,7 +167,7 @@ button { font: inherit; }
 @media (min-width: 40rem) { :root { --gutter: var(--s-6); } }
 @media (min-width: 75rem) {
   .shell { display: grid; grid-template-columns: minmax(0, 1fr) 300px; column-gap: var(--s-6); }
-  .ad-slot { grid-column: 2; padding-top: var(--s-5); }
+  .showcase-slot { grid-column: 2; padding-top: var(--s-5); }
 }
 .page { min-width: 0; container: page / inline-size; }
 
@@ -339,15 +339,12 @@ h1 { font-size: var(--fs-32); font-weight: 700; letter-spacing: -.025em; line-he
 .st-conn.is-offline { color: var(--accent); font-weight: 600; }
 .bump { display: inline-block; }
 
-/* Sticks to the bottom of the viewport while the editor is on screen, so Copy is always in reach.
-   Under 75rem it sits above the ad anchor instead of under it. */
+/* Sits in place right under the editor. Not sticky: a floating bar covered other content on narrow screens. */
 .ed-actions {
-  position: sticky; bottom: 0; z-index: var(--z-raise);
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-2);
-  padding-block: var(--s-3); background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(8px);
+  padding-block: var(--s-3);
 }
 .editor[data-state="empty"] ~ .ed-actions { display: none; }
-@media (max-width: 74.99rem) { body.has-ad-anchor .ed-actions { bottom: calc(6.5rem + env(safe-area-inset-bottom)); } }
 .ed-secondary { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 .btn .i-done, .lbl-done { display: none; }
 .is-copied .i-copy, .is-copied .lbl { display: none; }
@@ -432,7 +429,7 @@ legend { margin-bottom: var(--s-2); padding: 0; color: var(--muted); font-size: 
 .card-side .window { width: 100%; }
 
 .checks { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-4); }
-@container page (min-width: 48rem) { .checks { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .check-wide { grid-column: 1 / -1; } }
+@container page (min-width: 48rem) { .checks { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 .check { display: grid; align-content: start; gap: var(--s-3); min-width: 0; padding: var(--s-5); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
 .check h3 { display: flex; align-items: center; gap: var(--s-2); font-size: var(--fs-18); }
 .check h3 .i { color: var(--accent); }
@@ -453,11 +450,6 @@ legend { margin-bottom: var(--s-2); padding: 0; color: var(--muted); font-size: 
 .sw-state[data-ready="true"] { color: var(--text); }
 .sw-state[data-ready="true"] .i { color: var(--accent); }
 
-.code-block { margin: 0; padding: var(--s-4); border-radius: var(--r-md); background: var(--bg); border: 1px solid var(--border); color: var(--text); font: var(--fs-14)/1.7 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
-.code-block code { padding: 0; background: none; font-size: inherit; }
-.cb-prompt { color: var(--accent); user-select: none; }
-.cb-muted { color: var(--muted); }
-.cb-hit { padding: 0 .2em; border-radius: 4px; color: var(--ph-text); background: var(--ph-bg); font-weight: 600; }
 
 .stats { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-4); margin: 0; padding: 0; list-style: none; }
 @container page (min-width: 40rem) { .stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
@@ -479,7 +471,7 @@ legend { margin-bottom: var(--s-2); padding: 0; color: var(--muted); font-size: 
   font-size: var(--fs-14); transform: translateX(-50%); animation: toast-in var(--base) var(--ease-out);
 }
 @keyframes toast-in { from { opacity: 0; transform: translate(-50%, .75rem); } }
-@media (max-width: 74.99rem) { body.has-ad-anchor .toast { bottom: calc(7rem + env(safe-area-inset-bottom)); } }
+@media (max-width: 74.99rem) { body.has-showcase-bar .toast { bottom: calc(7rem + env(safe-area-inset-bottom)); } }
 
 @media (pointer: coarse) { .empty-hint, .empty-drop { display: none; } }
 

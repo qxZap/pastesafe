@@ -1,6 +1,6 @@
 // Page logic. Text goes to the scan worker and back. Nothing is sent over the network or stored anywhere.
 import makers from './makers.js';
-import { mountAds } from './adunit.js';
+import { mountAds } from './showcase.js';
 import { sampleLog } from './sample.js';
 
 const $ = id => document.getElementById(id);
@@ -636,8 +636,7 @@ if ('serviceWorker' in navigator) {
   $('sw-text').textContent = 'This browser cannot keep an offline copy.';
 }
 
-if (location.protocol.startsWith('http')) $('curl-cmd').textContent = `curl -I ${location.origin}/`;
 
 // ---- ads: our own apps, plain links ----
 
-mountAds($('ad-slot'), makers);
+mountAds($('showcase'), makers);
