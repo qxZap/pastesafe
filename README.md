@@ -14,7 +14,7 @@ PasteSafe is a free, static, single-page tool. Paste a log, stack trace, `.env` 
 - **Placeholders.** Each unique value gets a stable name such as `AWS_ACCESS_KEY_1`, `GITHUB_TOKEN_1`, `EMAIL_2` or `IP_1`. A placeholder that already appears in the input is never issued. Masked spans are widened to word boundaries, so restore can match whole words only (`EMAIL_1` never eats into `EMAIL_10`) and the round trip is byte for byte.
 - **Nothing stored.** The text and the placeholder map live in memory only. No cookies, no localStorage, no IndexedDB. Closing the tab forgets everything.
 - **Share image.** Drawn on a canvas with counts only, never content, and downloaded through a `blob:` URL.
-- **Live privacy monitor.** Instead of claims, the editor status bar and the "Check it yourself" section show readings the visitor can test: the number of network requests this page has made since it fully loaded (a `PerformanceObserver` on `resource` entries, started after the load event, `document.fonts.ready` and the scan worker's first answer; any URL that shows up is listed), the connection state from `navigator.onLine`, and whether the service worker has saved an offline copy (only once it controls the page). The section also shows the `curl -I` command and the CSP header it should return.
+- **Live privacy monitor.** Instead of claims, the editor status bar and the "Check it yourself" section show readings the visitor can test: the number of network requests this page has made since it fully loaded (a `PerformanceObserver` on `resource` entries, started after the load event, `document.fonts.ready` and the scan worker's first answer; any URL that shows up is listed), the connection state from `navigator.onLine`, and whether the service worker has saved an offline copy (only once it controls the page).
 - **House ads** for scrape.land, Penholder and Censory: `public/js/showcase.js` and `public/showcase.css` build a rotating unit (a dismissible anchor bar under 75rem, a sticky half-page unit in the right rail from 75rem). The data lives in `public/js/makers.js` with logos in `public/makers/`, instead of `ads.json`: the page CSP (`connect-src 'none'`) blocks fetching JSON, while a JS module loads under `script-src 'self'`. Nothing is named `ads`, because ad blockers block such files and a blocked import would break the page.
 - **Fonts.** JetBrains Mono (code) and IBM Plex Sans (interface) are self-hosted variable latin subsets in `public/fonts/`, under the SIL Open Font License (see `THIRD_PARTY_NOTICES`). The share card waits for `document.fonts.load` so the canvas draws with the real faces.
 - **Offline.** `public/sw.js` precaches the site's own files on install and serves same-origin requests network first with a cache fallback, so the page stays fresh online and works in airplane mode after the first visit.
@@ -23,14 +23,14 @@ PasteSafe is a free, static, single-page tool. Paste a log, stack trace, `.env` 
 
 1. Open DevTools, Network tab. Paste text, restore a reply, make a share image. No requests appear after the page has loaded, and the page's own counter stays at 0.
 2. Turn Wi-Fi off and paste again: it keeps cleaning, and the status bar switches to "Offline". Once the page says "Saved for offline use", a reload works without a connection too.
-3. Check the headers. The page is served with `connect-src 'none'`, so the browser blocks any connection the page tries to make:
+3. Check the security header. The page is served with `connect-src 'none'`, so the browser blocks any connection the page tries to make. With `npm start` running:
 
    ```sh
-   curl -I https://<your-domain>/
-   curl -I https://<your-domain>/sw.js
+   curl -I http://localhost:8080/
+   curl -I http://localhost:8080/sw.js
    ```
 
-   `/` (and `/js/*`) must show `Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; ...`. `/sw.js` must show `default-src 'none'; connect-src 'self'`: the service worker needs to download the site's own files, and nothing else. The rules in `public/_headers` are deliberately `/` and `/js/*`, not `/*`, because Cloudflare joins every matching rule and would stack `connect-src 'none'` onto `/sw.js`.
+   `/` (and `/js/*`) show `Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; ...`. `/sw.js` shows `default-src 'none'; connect-src 'self'`: the service worker needs to download the site's own files, and nothing else. The rules in `public/_headers` are deliberately `/` and `/js/*`, not `/*`, because matching rules are joined and `connect-src 'none'` would stack onto `/sw.js`.
 4. Read the code. There is no build step: what is in `public/` is exactly what is served.
 
 ## Run locally
@@ -58,26 +58,15 @@ The generator parses the TOML subset gitleaks uses and translates Go regex synta
 
 After changing any file in `public/`, update the `FILES` list and bump `CACHE` in `public/sw.js`. The tests fail if the list is out of date.
 
-## Deploy to Cloudflare
+## Open Graph image
 
-Static assets on Cloudflare are free and unlimited, so running cost is zero. Everything is set up in the dashboard; no `wrangler login` needed.
-
-1. Push this repo to GitHub.
-2. In the Cloudflare dashboard, go to **Workers & Pages**, then **Create**, then **Import a repository**, and pick the repo.
-3. Leave the build command empty. Set the deploy command to `npx wrangler deploy`. `wrangler.jsonc` serves `./public` as static assets, and `public/_headers` applies to every file.
-4. Deploy. Every push to the main branch deploys again.
-5. Under the Worker's **Settings**, **Domains & Routes**, add your custom domain.
-6. Check the headers with the two `curl -I` commands above.
-
-Alternative: **Cloudflare Pages**. Create a Pages project from the same repo, leave the build command empty and set the build output directory to `public`. Pages reads `public/_headers` the same way.
-
-After you pick a domain, consider making `og:image` and `twitter:image` in `public/index.html` absolute URLs (`https://<your-domain>/og.png`), since some link previews ignore relative image URLs. The Open Graph image source is `tools/og.html`; render it with headless Chrome:
+`public/og.png` is rendered from `tools/og.html` with headless Chrome:
 
 ```sh
 "C:/Program Files/Google/Chrome/Application/chrome.exe" --headless --screenshot="<abs path>/public/og.png" --window-size=1200,630 "file:///<abs path>/tools/og.html"
 ```
 
-Visitor numbers come from the Cloudflare dashboard. There is no analytics script.
+There is no analytics script.
 
 ## License
 
