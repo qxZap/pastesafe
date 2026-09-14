@@ -1,5 +1,5 @@
 // Page logic. Text goes to the scan worker and back. Nothing is sent over the network or stored anywhere.
-import ads from './ads.js';
+import makers from './makers.js';
 import { sampleLog } from './sample.js';
 
 const $ = id => document.getElementById(id);
@@ -14,11 +14,10 @@ const reply = $('reply'), restored = $('restored');
 
 // ---- scanning ----
 
-const worker = new Worker('/js/scan-worker.js', { type: 'module' });
 let scanSeq = 0, restoreSeq = 0, sent = '', timer;
 let last = null; // { text, findings, map: [[placeholder, value]], counts }
 
-worker.onmessage = ({ data }) => {
+const onResult = ({ data }) => {
   if (data.type === 'restore') {
     if (data.id === restoreSeq) restored.value = data.text;
     return;
@@ -29,7 +28,28 @@ worker.onmessage = ({ data }) => {
   render(data.ms);
   restoreReply();
 };
-worker.onerror = () => { status.textContent = 'The scanner could not start. Reload the page to try again.'; };
+
+// Same messages as scan-worker.js, answered on this thread. Used only when a browser or sandbox refuses the worker.
+function inPageScanner() {
+  const detect = import('./detect.js');
+  return {
+    postMessage: msg => detect.then(({ scan, restore }) => {
+      const t = performance.now();
+      onResult({ data: msg.type === 'scan'
+        ? { type: 'scan', id: msg.id, ...scan(msg.text, msg.enabled), ms: Math.round(performance.now() - t) }
+        : { type: 'restore', id: msg.id, text: restore(msg.text, msg.map) } });
+    }),
+  };
+}
+
+let worker;
+try {
+  worker = new Worker(new URL('./scan-worker.js', import.meta.url), { type: 'module' });
+  worker.onmessage = onResult;
+  worker.onerror = () => { worker = inPageScanner(); scanNow(); };
+} catch {
+  worker = inPageScanner();
+}
 
 function scanNow() {
   clearTimeout(timer);
@@ -201,6 +221,7 @@ $('make-card').addEventListener('click', () => {
 
 // ---- house ads and offline support ----
 
-$('ads').replaceChildren(...ads.map(ad => el('li', {}, el('a', { href: ad.url }, el('strong', {}, ad.title), el('span', {}, ad.line)))));
+$('makers').replaceChildren(...makers.map(m => el('li', {}, el('a', { href: m.url },
+  el('img', { src: m.logo, alt: '', width: 32, height: 32 }), el('strong', {}, m.title), el('small', {}, m.line)))));
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});

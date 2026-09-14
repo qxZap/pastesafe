@@ -16,8 +16,9 @@
   --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
+/* Dark follows the OS unless the viewer picked a theme (data-theme on the root wins both ways). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0c1210;
     --surface: #131b18;
     --ink: #e4ebe7;
@@ -31,6 +32,21 @@
     --code: #0f1714;
   }
 }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c1210;
+  --surface: #131b18;
+  --ink: #e4ebe7;
+  --muted: #a1aea7;
+  --line: #26312c;
+  --line-strong: #3d4a44;
+  --accent: #4cc790;
+  --accent-hover: #72d9aa;
+  --on-accent: #05130c;
+  --accent-soft: #16291f;
+  --code: #0f1714;
+}
+:root[data-theme="light"] { color-scheme: light; }
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -64,7 +80,7 @@ h1 { font-size: clamp(1.9rem, 1.1rem + 3.2vw, 3.1rem); letter-spacing: -0.03em; 
 @media (min-width: 72rem) {
   .layout { grid-template-columns: minmax(0, 1fr) 15.5rem; column-gap: 2rem; }
   .layout > * { grid-column: 1; }
-  .layout > .ads { grid-column: 2; grid-row: 1 / span 7; align-self: start; position: sticky; top: 1.25rem; }
+  .layout > .makers { grid-column: 2; grid-row: 1 / span 7; align-self: start; position: sticky; top: 1.25rem; }
 }
 
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; min-width: 0; }
@@ -134,15 +150,16 @@ legend { padding: 0; margin-bottom: 0.6rem; font-weight: 650; }
 .hit .n { flex: none; font-size: 0.8rem; color: var(--muted); }
 .empty { margin: 0.75rem 0 0; font-size: 0.875rem; color: var(--muted); }
 
-/* house ads */
-.ads { min-height: 10rem; }
-.ads h2 { margin: 0 0 0.6rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.ads ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
-@media (min-width: 40rem) and (max-width: 71.99rem) { .ads ul { grid-template-columns: 1fr 1fr; } }
-.ads a { display: block; height: 100%; padding: 0.85rem 0.95rem; color: var(--ink); text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-.ads a:hover { border-color: var(--accent); color: var(--ink); }
-.ads strong { display: block; color: var(--accent); }
-.ads span { display: block; margin-top: 0.2rem; font-size: 0.875rem; color: var(--muted); }
+/* from the makers: our other apps, logo and name on one row, the line under both */
+.makers { min-height: 10rem; }
+.makers h2 { margin: 0 0 0.6rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.makers ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+@media (min-width: 48rem) and (max-width: 71.99rem) { .makers ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.makers a { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: center; align-content: start; gap: 0.45rem 0.65rem; height: 100%; padding: 0.85rem 0.95rem; color: var(--ink); text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.makers a:hover { border-color: var(--accent); color: var(--ink); }
+.makers img { display: block; width: 2rem; height: 2rem; border-radius: 7px; }
+.makers strong { color: var(--accent); }
+.makers small { grid-column: 1 / -1; font-size: 0.875rem; line-height: 1.45; color: var(--muted); }
 
 /* share card */
 .card-out { margin-top: 1rem; }

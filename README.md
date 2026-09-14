@@ -13,7 +13,7 @@ PasteSafe is a free, static, single-page tool. Paste a log, stack trace, `.env` 
 - **Placeholders.** Each unique value gets a stable name such as `AWS_ACCESS_KEY_1`, `GITHUB_TOKEN_1`, `EMAIL_2` or `IP_1`. A placeholder that already appears in the input is never issued. Masked spans are widened to word boundaries, so restore can match whole words only (`EMAIL_1` never eats into `EMAIL_10`) and the round trip is byte for byte.
 - **Nothing stored.** The text and the placeholder map live in memory only. No cookies, no localStorage, no IndexedDB. Closing the tab forgets everything.
 - **Share image.** Drawn on a canvas with counts only, never content, and downloaded through a `blob:` URL.
-- **House ads** live in `public/js/ads.js` instead of `ads.json`, because the page CSP (`connect-src 'none'`) blocks fetching JSON; a JS module loads under `script-src 'self'`.
+- **From the makers** (house ads for scrape.land, Penholder and Censory) live in `public/js/makers.js` with logos in `public/makers/`, instead of `ads.json`: the page CSP (`connect-src 'none'`) blocks fetching JSON, while a JS module loads under `script-src 'self'`. Nothing is named `ads`, because ad blockers block such files and a blocked import would break the page.
 - **Offline.** `public/sw.js` precaches the site's own files on install and serves same-origin requests network first with a cache fallback, so the page stays fresh online and works in airplane mode after the first visit.
 
 ## Verify the privacy claims yourself
