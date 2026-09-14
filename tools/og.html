@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- Source for public/og.png (1200x630). Render with:
+  "C:/Program Files/Google/Chrome/Application/chrome.exe" --headless --screenshot=<abs path>/public/og.png --window-size=1200,630 file:///<abs path>/tools/og.html
+  Not served, so inline styles are fine here. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body { background: #0c1210; color: #e4ebe7; font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+  .frame { box-sizing: border-box; height: 630px; padding: 64px 80px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 16px; font-size: 34px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand svg { width: 52px; height: 52px; }
+  .pill { margin-left: auto; font-size: 24px; font-weight: 600; color: #4cc790; background: #16291f; border-radius: 999px; padding: 8px 22px; }
+  h1 { margin: 44px 0 0; font-size: 80px; line-height: 1.02; letter-spacing: -0.035em; color: #f4f8f6; }
+  .log { margin-top: auto; background: #131b18; border: 2px solid #26312c; border-radius: 16px; padding: 26px 32px;
+    font: 27px/1.6 "Cascadia Mono", Consolas, "SF Mono", monospace; color: #a1aea7; white-space: pre; }
+  .ph { color: #05130c; background: #4cc790; border-radius: 6px; padding: 1px 8px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="brand">
+    <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0b6e4f"/><rect x="7" y="8" width="18" height="3" rx="1.5" fill="#fff"/><rect x="7" y="14.5" width="7" height="3" rx="1.5" fill="#fff"/><rect x="16" y="13.5" width="9" height="5" rx="1.5" fill="#8fe3b8"/><rect x="7" y="21" width="12" height="3" rx="1.5" fill="#fff"/></svg>
+    PasteSafe
+    <span class="pill">Runs in your browser. 0 bytes uploaded.</span>
+  </div>
+  <h1>Clean it before<br>you paste it.</h1>
+  <div class="log">STRIPE_SECRET_KEY=<span class="ph">STRIPE_KEY_1</span>
+DATABASE_URL=postgres://app:<span class="ph">DB_PASSWORD_1</span>@db:5432
+payment failed for <span class="ph">EMAIL_1</span> from <span class="ph">IP_1</span></div>
+</div>
+</body>
+</html>
