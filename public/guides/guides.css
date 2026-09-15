@@ -49,4 +49,3 @@
 
 .g-page .team { margin-top: var(--s-7); }
 .g-page .team .btn { justify-self: start; white-space: normal; text-align: center; }
-.g-page .foot-links a { display: inline-flex; align-items: center; min-height: var(--target); padding-block: 0; }

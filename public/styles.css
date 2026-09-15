@@ -466,9 +466,12 @@ legend { margin-bottom: var(--s-2); padding: 0; color: var(--muted); font-size: 
 @container page (min-width: 48rem) { .team { grid-template-columns: minmax(0, 1fr) auto; padding: var(--s-6); } }
 
 .foot { margin-top: var(--s-7); padding-block: var(--s-5) var(--s-6); border-top: 1px solid var(--border); color: var(--muted); font-size: var(--fs-14); }
-.foot-more { margin-top: var(--s-4); color: var(--text); font-weight: 600; }
-.foot-links { display: flex; flex-wrap: wrap; gap: 0 var(--s-5); margin: var(--s-1) 0 0; padding: 0; list-style: none; }
-.foot-links a { display: inline-block; padding-block: var(--s-2); }
+a.vcf-home { display: inline-flex; align-items: center; gap: .65rem; min-height: var(--target); margin-bottom: var(--s-3); padding: .3rem 1.1rem .3rem .35rem; border: 1px solid var(--border); border-radius: 999px; color: var(--text); font-weight: 600; text-decoration: none; transition: border-color .2s ease-out, background-color .2s ease-out; }
+a.vcf-home:hover { color: var(--text); border-color: #ff4fa3; background: color-mix(in srgb, #ff4fa3 8%, transparent); }
+.vcf-home svg { flex: none; width: 1.9rem; height: 1.9rem; transition: transform .3s cubic-bezier(.3, 1.5, .5, 1); }
+.vcf-home:hover svg, .vcf-home:focus-visible svg { transform: rotate(-8deg) scale(1.1); }
+.vcf-home b { font-weight: 800; }
+@media (prefers-reduced-motion: reduce) { .vcf-home svg { transition: none; } }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(var(--s-4) + env(safe-area-inset-bottom)); z-index: var(--z-toast);
