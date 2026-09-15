@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://pastesafe.vibe-coding.fans/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/mask-pii-in-logs/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/mask-sensitive-data-in-logs/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/sanitize-logs-before-sharing/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-paste-code-into-chatgpt/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/what-to-do-if-you-leaked-an-api-key/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/remove-secrets-from-git-history/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/sanitize-har-file/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/mask-credit-card-numbers/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/share-env-file-safely/</loc><lastmod>2026-09-15</lastmod></url>
+  <url><loc>https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-share-a-jwt/</loc><lastmod>2026-09-15</lastmod></url>
 </urlset>

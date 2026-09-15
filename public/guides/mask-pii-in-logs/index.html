@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to mask PII in logs before you share them | PasteSafe</title>
+<meta name="description" content="Emails, IP addresses, card numbers and phone numbers pile up in logs. See what counts as PII, how to mask it in a log you have, and how to stop logging it.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/mask-pii-in-logs/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/mask-pii-in-logs/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="How to mask PII in logs before you share them">
+<meta property="og:description" content="Emails, IP addresses, card numbers and phone numbers pile up in logs. See what counts as PII, how to mask it in a log you have, and how to stop logging it.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to mask PII in logs before you share them">
+<meta name="twitter:description" content="Emails, IP addresses, card numbers and phone numbers pile up in logs. See what counts as PII, how to mask it in a log you have, and how to stop logging it.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to mask PII in logs",
+  "description": "Emails, IP addresses, card numbers and phone numbers pile up in logs. See what counts as PII, how to mask it in a log you have, and how to stop logging it.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/mask-pii-in-logs/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/mask-pii-in-logs/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "How to mask PII in logs",
+      "item": "https://pastesafe.vibe-coding.fans/guides/mask-pii-in-logs/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is an IP address PII?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Often, yes. Under the GDPR an IP address is personal data when it can be linked to a person, for example together with your account records or an internet provider's records. Treat IP addresses in your own logs as personal data unless you know they belong to servers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does masking make a log anonymous?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not always. Masking removes the values it finds, but user IDs, timestamps, order numbers and free text can still point to one person. Masking is enough to share a log for debugging. Calling data anonymous is a much higher bar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I still debug a log after masking PII?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. PasteSafe gives each unique value its own placeholder, so EMAIL_1 on one line is the same person as EMAIL_1 on another. You can also untick a type, such as IP addresses, when you need it for the problem at hand."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does PasteSafe upload my log?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The log is scanned in your browser, in a background thread with no network code, and the page's Content Security Policy blocks connections. Nothing is saved, and closing the tab clears everything."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">How to mask PII in logs</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>How to mask PII in logs</h1>
+      <p class="g-lead">Logs collect personal data without anyone deciding to: an email in an error message, a client IP on every access log line. Here is what to look for, how to mask it in a log you already have, and how to stop writing it.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>What counts as PII in a log</h2>
+<p>PII (personally identifiable information) is anything that points to a person on its own or together with other data. In application logs it shows up in a few predictable places:</p>
+<ul>
+<li><strong>Email addresses</strong> in login, signup, password reset and billing messages, and as user identifiers in structured logs.</li>
+<li><strong>IP addresses</strong> in web server access logs, <code>X-Forwarded-For</code> headers, and rate limiting or fraud messages.</li>
+<li><strong>Card numbers and IBANs</strong> in payment errors, webhook dumps and request bodies logged at debug level.</li>
+<li><strong>Phone numbers</strong> in SMS, two factor and support flows.</li>
+<li><strong>Names, street addresses and dates of birth</strong> in profile updates, orders and shipping.</li>
+<li><strong>User IDs, session IDs and device IDs</strong>, which may not identify anyone alone but tie every other line to one person.</li>
+</ul>
+<p>Under the GDPR, an email address or an IP address is personal data when it can be linked to a person, and for your own users it usually can. That matters the moment a log leaves the system that wrote it: pasted into a GitHub issue, attached to a vendor ticket, dropped in a team chat or sent to an AI assistant. Each copy is one more place that holds your users' data, with its own retention and access rules.</p>
+
+<h2>Example: a log with PII, before and after</h2>
+<p>Before highlights what PasteSafe finds. After is the exact output of PasteSafe's scanner on that text.</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>2026-09-15T09:41:07Z INFO  login ok user=<mark class="leak">jane.doe@example.com</mark> ip=<mark class="leak">203.0.113.9</mark>
+2026-09-15T09:41:09Z ERROR charge failed for <mark class="leak">jane.doe@example.com</mark> card=<mark class="leak">4242 4242 4242 4242</mark>
+2026-09-15T09:41:09Z WARN  refund to IBAN <mark class="leak">GB82 WEST 1234 5698 7654 32</mark>, callback <mark class="leak">+1 415 555 0132</mark>
+2026-09-15T09:41:10Z INFO  X-Forwarded-For: <mark class="leak">198.51.100.7</mark>, <mark class="leak">192.0.2.44</mark>
+2026-09-15T09:41:11Z INFO  profile update name=&quot;Jane Doe&quot; dob=1990-04-12 email=jane.doe%40example.com
+2026-09-15T09:41:12Z INFO  sms fallback to 415.555.0132 from 127.0.0.1</code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>2026-09-15T09:41:07Z INFO  login ok user=<mark class="hit">EMAIL_1</mark> ip=<mark class="hit">IP_1</mark>
+2026-09-15T09:41:09Z ERROR charge failed for <mark class="hit">EMAIL_1</mark> card=<mark class="hit">CARD_1</mark>
+2026-09-15T09:41:09Z WARN  refund to IBAN <mark class="hit">IBAN_1</mark>, callback <mark class="hit">PHONE_1</mark>
+2026-09-15T09:41:10Z INFO  X-Forwarded-For: <mark class="hit">IP_2</mark>, <mark class="hit">IP_3</mark>
+2026-09-15T09:41:11Z INFO  profile update name=&quot;Jane Doe&quot; dob=1990-04-12 email=jane.doe%40example.com
+2026-09-15T09:41:12Z INFO  sms fallback to 415.555.0132 from 127.0.0.1</code></pre></figure>
+</div>
+<p>Every email, IP address, card number, IBAN and international phone number is replaced. The same email gets the same placeholder on every line, so you can still follow one customer through the log. The last two lines show what stays: the name, the date of birth, the URL encoded email, the phone number written with dots and the loopback address.</p>
+
+<h2>How to mask PII in a log with PasteSafe</h2>
+<ol>
+<li>Open <a href="/">PasteSafe</a> and paste the log, or drop the log file onto the editor. The file is read on your device.</li>
+<li>Emails become <code>EMAIL_1</code>, IP addresses <code>IP_1</code>, card numbers <code>CARD_1</code>, IBANs <code>IBAN_1</code> and phone numbers <code>PHONE_1</code>. API keys, tokens and passwords are masked in the same pass.</li>
+<li>Check the Findings list. If you need the IP addresses to debug a network problem, untick IP addresses under Mask these and they stay in the text.</li>
+<li>Read the cleaned text for anything a scanner cannot know is personal, such as names.</li>
+<li>Copy the cleaned text and share it. If an AI assistant answers with placeholders, paste its reply into Put the real values back to swap the real values in again, in your browser.</li>
+</ol>
+<p>The scan runs in a Web Worker inside the page, and the page's Content Security Policy blocks network connections, so the log is not uploaded anywhere.</p>
+
+<h2>Masking PII on the command line</h2>
+<p>For a quick one off with GNU sed, these two expressions replace email addresses and IPv4 addresses:</p>
+<pre class="code" tabindex="0"><code>sed -E 's/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/EMAIL/g; s/\b([0-9]{1,3}\.){3}[0-9]{1,3}\b/IP/g' app.log &gt; app.masked.log</code></pre>
+<p>It works, with limits. Every address becomes the same <code>EMAIL</code>, so you can no longer tell two users apart. The IP pattern also hits version strings like 1.2.3.4. And there is nothing for card numbers, which need a Luhn check to avoid masking every long order number.</p>
+<p>If you only need to hide which host a request came from, keep the network and zero the last octet:</p>
+<pre class="code" tabindex="0"><code>sed -E 's/\b([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})\.[0-9]{1,3}\b/\1.0/g' access.log &gt; access.masked.log</code></pre>
+<p>The sed that ships with macOS does not support <code>\b</code>. Install GNU sed, or use <code>perl -pe</code>, which understands the same patterns.</p>
+
+<h2>Stop writing PII into logs</h2>
+<p>Masking a copy fixes one paste. For logs your services write every day, fix it at the source:</p>
+<ul>
+<li>Log a user ID instead of an email address. Support can look the user up when they need to.</li>
+<li>Never log full card numbers. If you need to tell cards apart, log the brand and the last four digits.</li>
+<li>Decide how long access logs with IP addresses are kept, and truncate or drop the address where you do not need it.</li>
+<li>Add redaction to your logger, so fields like <code>email</code>, <code>password</code> and <code>authorization</code> are replaced before anything is written. The guide on <a href="/guides/mask-sensitive-data-in-logs/">masking sensitive data in logs</a> has examples for Node, Python, Java and Go.</li>
+</ul>
+
+<h2>What PasteSafe does not catch</h2>
+<p>PasteSafe looks for data with a recognizable shape. It does not mask:</p>
+<ul>
+<li>Names, street addresses, dates of birth, and national ID numbers such as US Social Security numbers.</li>
+<li>URL encoded emails like <code>jane.doe%40example.com</code>.</li>
+<li>Phone numbers in local formats without a country code, or written with dots. It matches international numbers starting with <code>+</code> and US numbers like <code>(415) 555-0132</code> or <code>415-555-0132</code>.</li>
+<li>Card numbers that fail the Luhn check, and loopback addresses such as <code>127.0.0.1</code>, which it skips on purpose.</li>
+<li>User IDs, hostnames and anything else that is only personal in context.</li>
+</ul>
+<p>Read the cleaned text before you share it.</p>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>Is an IP address PII?</h3>
+      <p>Often, yes. Under the GDPR an IP address is personal data when it can be linked to a person, for example together with your account records or an internet provider's records. Treat IP addresses in your own logs as personal data unless you know they belong to servers.</p>
+      <h3>Does masking make a log anonymous?</h3>
+      <p>Not always. Masking removes the values it finds, but user IDs, timestamps, order numbers and free text can still point to one person. Masking is enough to share a log for debugging. Calling data anonymous is a much higher bar.</p>
+      <h3>Can I still debug a log after masking PII?</h3>
+      <p>Yes. PasteSafe gives each unique value its own placeholder, so EMAIL_1 on one line is the same person as EMAIL_1 on another. You can also untick a type, such as IP addresses, when you need it for the problem at hand.</p>
+      <h3>Does PasteSafe upload my log?</h3>
+      <p>No. The log is scanned in your browser, in a background thread with no network code, and the page's Content Security Policy blocks connections. Nothing is saved, and closing the tab clears everything.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/mask-sensitive-data-in-logs/"><b>How to mask sensitive data in logs</b><span>Redact passwords, tokens and personal data in logs with pino, Python logging, Logback, Log4j 2 and Go slog, and clean up logs that already contain secrets.</span></a></li>
+      <li><a href="/guides/sanitize-logs-before-sharing/"><b>How to sanitize logs before you share them</b><span>Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.</span></a></li>
+      <li><a href="/guides/mask-credit-card-numbers/"><b>How to mask credit card numbers in logs and text</b><span>Mask card numbers in logs and text: how to spot a PAN with the Luhn check, masking in JavaScript, Python and sed, and what PCI DSS says about display.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+/* Guides: plain article pages on top of styles.css (tokens, fonts, buttons, header, footer). No JavaScript. */
+
+.g-page { max-width: 50rem; margin-inline: auto; padding-inline: var(--gutter); }
+
+.crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s-2); margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-14); }
+.crumbs li { display: inline-flex; align-items: center; gap: var(--s-2); min-height: var(--target); }
+.crumbs li + li::before { content: "/"; color: var(--border-strong); }
+.crumbs a { display: inline-flex; align-items: center; min-height: var(--target); color: var(--muted); }
+.crumbs a:hover { color: var(--text); }
+
+.g-head { padding-block: var(--s-3) var(--s-2); }
+.g-head h1 { font-size: var(--fs-32); }
+@media (min-width: 48rem) { .g-head h1 { font-size: 2.5rem; } }
+.g-lead { margin-top: var(--s-3); color: var(--muted); font-size: var(--fs-18); }
+.g-cta { margin-top: var(--s-5); }
+.g-cta .btn { white-space: normal; text-align: center; }
+
+.g-body h2 { margin: var(--s-7) 0 0; font-size: var(--fs-24); }
+.g-body h3 { margin: var(--s-5) 0 0; font-size: var(--fs-18); }
+.g-body p, .g-body ul, .g-body ol { margin: var(--s-3) 0 0; }
+.g-body ul, .g-body ol { padding-left: 1.5em; }
+.g-body li + li { margin-top: var(--s-2); }
+.g-body li::marker { color: var(--accent); font-weight: 600; }
+
+.code {
+  margin: var(--s-4) 0 0; padding: var(--s-3) var(--s-4); overflow-x: auto;
+  color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md);
+  font: 400 var(--fs-14)/1.65 var(--mono); tab-size: 2; white-space: pre;
+}
+.code code { padding: 0; border-radius: 0; background: none; font-size: inherit; overflow-wrap: normal; }
+.code:focus-visible { outline-offset: 0; }
+
+.ba { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-4); margin-top: var(--s-4); }
+.ba figure { min-width: 0; margin: 0; }
+.ba figcaption { margin-bottom: var(--s-2); color: var(--muted); font-size: var(--fs-12); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.ba .code { margin: 0; }
+.ba .hit { line-height: inherit; }
+.leak { padding: 0 .15em; border-radius: 4px; color: var(--text); background: var(--danger-soft); box-shadow: inset 0 -2px 0 var(--danger); }
+
+.g-faq h3 { margin-top: var(--s-5); }
+
+.g-related { margin-top: var(--s-7); }
+.g-related h2 { font-size: var(--fs-24); }
+.g-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-3); margin: var(--s-4) 0 0; padding: 0; list-style: none; }
+.g-list a { display: block; min-height: var(--target); padding: var(--s-4) var(--s-5); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); color: var(--text); text-decoration: none; box-shadow: var(--shadow-1); transition: border-color var(--fast) var(--ease-out); }
+.g-list a:hover { border-color: var(--accent); color: var(--text); }
+.g-list b { display: block; color: var(--accent); font-size: var(--fs-18); font-weight: 600; line-height: 1.3; }
+.g-list span { display: block; margin-top: var(--s-1); color: var(--muted); font-size: var(--fs-14); }
+
+.g-page .team { margin-top: var(--s-7); }
+.g-page .team .btn { justify-self: start; white-space: normal; text-align: center; }
+.g-page .foot-links a { display: inline-flex; align-items: center; min-height: var(--target); padding-block: 0; }

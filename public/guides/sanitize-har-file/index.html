@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to sanitize a HAR file before you share it | PasteSafe</title>
+<meta name="description" content="HAR files hold session cookies, tokens and passwords. See what Chrome's sanitized export removes, clean up with jq, and mask what is left in your browser.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/sanitize-har-file/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/sanitize-har-file/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="How to sanitize a HAR file before you share it">
+<meta property="og:description" content="HAR files hold session cookies, tokens and passwords. See what Chrome's sanitized export removes, clean up with jq, and mask what is left in your browser.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to sanitize a HAR file before you share it">
+<meta name="twitter:description" content="HAR files hold session cookies, tokens and passwords. See what Chrome's sanitized export removes, clean up with jq, and mask what is left in your browser.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to sanitize a HAR file",
+  "description": "HAR files hold session cookies, tokens and passwords. See what Chrome's sanitized export removes, clean up with jq, and mask what is left in your browser.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/sanitize-har-file/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/sanitize-har-file/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "How to sanitize a HAR file",
+      "item": "https://pastesafe.vibe-coding.fans/guides/sanitize-har-file/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a sanitized HAR file?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A HAR file with sensitive data removed. In Chrome DevTools the default sanitized export leaves out the Cookie, Set-Cookie and Authorization headers. Tokens in URLs, custom headers and request or response bodies are still included."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does a HAR file contain passwords?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It can. If you signed in while recording, the login request body with your password is in the file. It also holds session cookies and tokens, which work without the password."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to send a HAR file to support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Only to a support channel you trust, and only after sanitizing it. Record just the steps that show the problem, sign out afterwards to end the session, and remove cookies, tokens and bodies you do not need to share."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can PasteSafe open a .har file?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Drop the file onto the editor and it is read and scanned in your browser, with nothing uploaded. Copy the cleaned text and save it as a new .har file."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">How to sanitize a HAR file</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>How to sanitize a HAR file</h1>
+      <p class="g-lead">A HAR file is a recording of everything your browser sent and received, including session cookies and tokens that let someone act as you. Here is what is in one, what Chrome's sanitized export removes, and how to clean the rest.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>What is in a HAR file</h2>
+<p>HAR (HTTP Archive) is a JSON format for recording browser network traffic. Support teams ask for one because it shows exactly what happened. For each request it can contain:</p>
+<ul>
+<li>The full URL, including query strings such as <code>?token=</code> or <code>?api_key=</code>.</li>
+<li>Request and response headers, including <code>Cookie</code>, <code>Set-Cookie</code> and <code>Authorization</code>.</li>
+<li>The parsed cookies again, in separate <code>cookies</code> arrays.</li>
+<li>Request bodies, including the password you typed if you signed in while recording.</li>
+<li>Response bodies: account details, API responses, sometimes OAuth tokens.</li>
+<li>The IP address of the server that answered.</li>
+</ul>
+<p>The session cookie is the dangerous part. It is what keeps you signed in, so whoever has a valid one can use your session without your password or second factor, until the session ends.</p>
+
+<h2>What Chrome's sanitized export removes</h2>
+<p>Chrome DevTools exports a sanitized HAR by default. According to the <a href="https://developer.chrome.com/docs/devtools/network/reference">Network panel reference</a>, it leaves out the <code>Cookie</code>, <code>Set-Cookie</code> and <code>Authorization</code> headers. To export them you have to turn on Allow to generate HAR with sensitive data in the DevTools network preferences.</p>
+<p>That is a good start, but everything else stays: tokens in URLs, API keys in custom headers like <code>X-Api-Key</code>, passwords in request bodies and personal data in responses. Other browsers and older versions may export everything, so check the file before you send it.</p>
+
+<h2>Clean headers and cookies with jq</h2>
+<p>This <a href="https://github.com/jqlang/jq">jq</a> command replaces sensitive headers and empties the cookie arrays in every entry:</p>
+<pre class="code" tabindex="0"><code>jq '(.log.entries[].request.headers[], .log.entries[].response.headers[])
+      |= (if (.name | test("^(authorization|cookie|set-cookie|x-api-key)$"; "i")) then .value = "REDACTED" else . end)
+    | .log.entries[].request.cookies = []
+    | .log.entries[].response.cookies = []' in.har &gt; clean.har</code></pre>
+<p>If the support team does not need the bodies, empty those too. It also makes the file much smaller:</p>
+<pre class="code" tabindex="0"><code>jq '(.log.entries[].request.postData | select(.) | .text) = "" | .log.entries[].response.content.text = ""' clean.har &gt; small.har</code></pre>
+
+<h2>Mask what is left with PasteSafe</h2>
+<p>A HAR file is text, so you can drop it straight onto the <a href="/">PasteSafe</a> editor. It is read on your device and scanned in your browser. Here is a trimmed HAR entry. Before highlights what PasteSafe finds, After is its exact output:</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>{
+  &quot;request&quot;: {
+    &quot;method&quot;: &quot;POST&quot;,
+    &quot;url&quot;: &quot;https://api.example.com/v1/login?api_key=<mark class="leak">Qm9vbGVhbkZha2VLZXkxMjM0NTY3OA</mark>&quot;,
+    &quot;headers&quot;: [
+      { &quot;name&quot;: &quot;Authorization&quot;, &quot;value&quot;: &quot;Bearer <mark class="leak">FakeBearer7fK2mZpL9wR3nB8vT1yCq</mark>&quot; },
+      { &quot;name&quot;: &quot;Cookie&quot;, &quot;value&quot;: &quot;sessionid=9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c; theme=dark&quot; }
+    ],
+    &quot;postData&quot;: {
+      &quot;mimeType&quot;: &quot;application/json&quot;,
+      &quot;text&quot;: &quot;{\&quot;email\&quot;:\&quot;<mark class="leak">jane.doe@example.com</mark>\&quot;,\&quot;password\&quot;:\&quot;Tr0ub4dor-3x\&quot;}&quot;
+    }
+  },
+  &quot;serverIPAddress&quot;: &quot;<mark class="leak">198.51.100.7</mark>&quot;
+}</code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>{
+  &quot;request&quot;: {
+    &quot;method&quot;: &quot;POST&quot;,
+    &quot;url&quot;: &quot;https://api.example.com/v1/login?api_key=<mark class="hit">API_KEY_1</mark>&quot;,
+    &quot;headers&quot;: [
+      { &quot;name&quot;: &quot;Authorization&quot;, &quot;value&quot;: &quot;Bearer <mark class="hit">BEARER_TOKEN_1</mark>&quot; },
+      { &quot;name&quot;: &quot;Cookie&quot;, &quot;value&quot;: &quot;sessionid=9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c; theme=dark&quot; }
+    ],
+    &quot;postData&quot;: {
+      &quot;mimeType&quot;: &quot;application/json&quot;,
+      &quot;text&quot;: &quot;{\&quot;email\&quot;:\&quot;<mark class="hit">EMAIL_1</mark>\&quot;,\&quot;password\&quot;:\&quot;Tr0ub4dor-3x\&quot;}&quot;
+    }
+  },
+  &quot;serverIPAddress&quot;: &quot;<mark class="hit">IP_1</mark>&quot;
+}</code></pre></figure>
+</div>
+<p>The Bearer token, the API key in the URL, the email and the server IP are masked. Two things are not: the password inside the escaped JSON request body, and the <code>sessionid</code> cookie with a plain hex value. The jq commands above take care of both, which is why it makes sense to run them first.</p>
+<ol>
+<li>Export a sanitized HAR, then run the jq commands.</li>
+<li>Drop the file onto PasteSafe. HAR files with bodies are often several megabytes. PasteSafe handles that, but above 300 KB it shows the result as plain text without highlights.</li>
+<li>Search the cleaned text for your own email, user name and anything from the pages you visited that you would not want shared.</li>
+<li>Copy the cleaned text, save it as a new file with the <code>.har</code> extension, and send that.</li>
+</ol>
+
+<h2>What PasteSafe does not catch in a HAR file</h2>
+<ul>
+<li>Passwords and tokens inside escaped JSON strings, such as the request body in <code>postData.text</code>.</li>
+<li>Cookie header values that hold several cookies, like the one in the example.</li>
+<li>Personal data without a fixed format in response bodies: names, addresses, order details.</li>
+<li>Anything inside base64 encoded bodies.</li>
+</ul>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>What is a sanitized HAR file?</h3>
+      <p>A HAR file with sensitive data removed. In Chrome DevTools the default sanitized export leaves out the Cookie, Set-Cookie and Authorization headers. Tokens in URLs, custom headers and request or response bodies are still included.</p>
+      <h3>Does a HAR file contain passwords?</h3>
+      <p>It can. If you signed in while recording, the login request body with your password is in the file. It also holds session cookies and tokens, which work without the password.</p>
+      <h3>Is it safe to send a HAR file to support?</h3>
+      <p>Only to a support channel you trust, and only after sanitizing it. Record just the steps that show the problem, sign out afterwards to end the session, and remove cookies, tokens and bodies you do not need to share.</p>
+      <h3>Can PasteSafe open a .har file?</h3>
+      <p>Yes. Drop the file onto the editor and it is read and scanned in your browser, with nothing uploaded. Copy the cleaned text and save it as a new .har file.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/is-it-safe-to-share-a-jwt/"><b>Is it safe to share a JWT token?</b><span>A JWT works for whoever holds it until it expires, and anyone can read its payload. Learn where tokens leak, how to decode one locally and how to mask it.</span></a></li>
+      <li><a href="/guides/sanitize-logs-before-sharing/"><b>How to sanitize logs before you share them</b><span>Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.</span></a></li>
+      <li><a href="/guides/mask-pii-in-logs/"><b>How to mask PII in logs</b><span>Emails, IP addresses, card numbers and phone numbers pile up in logs. See what counts as PII, how to mask it in a log you have, and how to stop logging it.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

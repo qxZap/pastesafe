@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What to do if you leaked an API key or token | PasteSafe</title>
+<meta name="description" content="Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/what-to-do-if-you-leaked-an-api-key/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/what-to-do-if-you-leaked-an-api-key/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="What to do if you leaked an API key or token">
+<meta property="og:description" content="Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What to do if you leaked an API key or token">
+<meta name="twitter:description" content="Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "What to do if you leaked an API key",
+  "description": "Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/what-to-do-if-you-leaked-an-api-key/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/what-to-do-if-you-leaked-an-api-key/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "What to do if you leaked an API key",
+      "item": "https://pastesafe.vibe-coding.fans/guides/what-to-do-if-you-leaked-an-api-key/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What happens if you leak an API key?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Anyone who finds it can use it with the key's permissions until you revoke it. Depending on the key, that means usage charges on your account, access to your data, or messages and payments sent in your name. Keys in public repositories are found by automated scanners."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is deleting the commit or message enough?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The key still works, and copies may already exist in clones, forks, notifications, caches and backups. Revoke or rotate the key first, then clean up."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I know if a leaked key was used?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Check the provider's usage, billing and audit logs for activity you do not recognize since the leak, such as AWS CloudTrail events for that access key ID. If the logs show nothing, still rotate the key."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can PasteSafe check if a key is still valid?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. PasteSafe never makes network requests, so it cannot test a key. It finds and masks keys in text, so they do not leak again when you share a log."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">What to do if you leaked an API key</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>What to do if you leaked an API key</h1>
+      <p class="g-lead">Revoke or rotate the key first, before anything else. Deleting the commit, message or chat does not stop the key from working. Then check whether it was used, clean up where it leaked, and make the next leak less likely.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>1. Revoke or rotate the key now</h2>
+<p>Anyone who has the key can use it until the provider stops accepting it, and only revoking it does that. If the key leaked somewhere public, disable it right away and accept a short outage. If it leaked somewhere private, you can create the replacement first, deploy it, and then disable the old key.</p>
+<p>How that looks with a few common providers:</p>
+<ul>
+<li><strong>AWS access keys:</strong> create a new key, update everything that uses it, then deactivate and delete the old one.</li>
+<li><strong>Stripe:</strong> in the Dashboard, open the API keys page under Developers and use Roll key on the secret key. You can choose when the old key stops working.</li>
+<li><strong>OpenAI, Anthropic and other AI APIs:</strong> delete the key on the API keys page of the console and create a new one.</li>
+<li><strong>GitHub personal access tokens:</strong> delete the token under Settings, Developer settings, Personal access tokens, and create a new one with the smallest scope that works.</li>
+<li><strong>Database passwords:</strong> set a new password for the user, for example with <code>ALTER USER app WITH PASSWORD '...';</code> in PostgreSQL, then update every connection string.</li>
+</ul>
+<p>For AWS with the CLI, where <code>deploy-bot</code> is the IAM user that owns the key:</p>
+<pre class="code" tabindex="0"><code>aws iam create-access-key --user-name deploy-bot
+aws iam update-access-key --user-name deploy-bot --access-key-id AKIA2EXAMPLE7FAKEKEY --status Inactive
+aws iam delete-access-key --user-name deploy-bot --access-key-id AKIA2EXAMPLE7FAKEKEY</code></pre>
+<p>Not sure which service a key belongs to? Paste the text around it into <a href="/">PasteSafe</a>. For known formats the placeholder is named after the rule that matched, such as <code>STRIPE_KEY_1</code>, <code>AWS_ACCESS_KEY_1</code> or <code>OPENAI_API_KEY_1</code>.</p>
+
+<h2>2. Check whether it was used</h2>
+<ul>
+<li>Look at the provider's usage and billing pages for activity since the leak.</li>
+<li>Read the audit logs. On AWS, CloudTrail can list the management events of the last 90 days made with a specific key, per region.</li>
+<li>Look for things you did not create: new users or keys, servers in regions you do not use, changed webhooks, emails or messages you did not send.</li>
+<li>If the key could read customer data and there are signs it was used, bring in whoever handles security incidents at your company. There may be a duty to notify people.</li>
+</ul>
+<pre class="code" tabindex="0"><code>aws cloudtrail lookup-events --lookup-attributes AttributeKey=AccessKeyId,AttributeValue=AKIA2EXAMPLE7FAKEKEY</code></pre>
+
+<h2>3. Remove it from where it leaked</h2>
+<ul>
+<li><strong>A git repository:</strong> deleting the file in a new commit leaves the key in the history. See <a href="/guides/remove-secrets-from-git-history/">how to remove a secret from git history</a>.</li>
+<li><strong>A chat message, ticket or issue:</strong> edit or delete it, and remember that email notifications may already contain the text.</li>
+<li><strong>An AI chat:</strong> delete the conversation. The provider may keep it for a while, which is one more reason the key has to be rotated.</li>
+<li><strong>A log or monitoring tool:</strong> delete the affected entries if the tool allows it, and fix the code that logged the key.</li>
+</ul>
+
+<h2>How keys leak through logs</h2>
+<p>A common path is a debug log that prints a request, an SDK error that echoes the key, or a startup message that dumps the configuration. The log then gets pasted into an issue or an AI chat. Here is what PasteSafe does with such a log. Before highlights what it finds, After is its exact output:</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>2026-09-15T09:41:07Z DEBUG stripe: 401 Invalid API Key provided: <mark class="leak">sk_test_51FakeKeyForDocs0nlyNotReal0000</mark>
+2026-09-15T09:41:08Z INFO  aws: using credentials <mark class="leak">AKIA2EXAMPLE7FAKEKEY</mark> from profile deploy
+2026-09-15T09:41:08Z DEBUG GET https://api.example.com/v2/export?api_key=<mark class="leak">Qm9vbGVhbkZha2VLZXkxMjM0NTY3OA</mark>
+2026-09-15T09:41:09Z DEBUG headers: {&quot;X-Api-Key&quot;: &quot;<mark class="leak">3f9a2c7e1b8d4f6a0c5e9b2d7a1f4c8e</mark>&quot;}</code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>2026-09-15T09:41:07Z DEBUG stripe: 401 Invalid API Key provided: <mark class="hit">STRIPE_KEY_1</mark>
+2026-09-15T09:41:08Z INFO  aws: using credentials <mark class="hit">AWS_ACCESS_KEY_1</mark> from profile deploy
+2026-09-15T09:41:08Z DEBUG GET https://api.example.com/v2/export?api_key=<mark class="hit">SECRET_1</mark>
+2026-09-15T09:41:09Z DEBUG headers: {&quot;X-Api-Key&quot;: &quot;<mark class="hit">SECRET_2</mark>&quot;}</code></pre></figure>
+</div>
+
+<h2>4. Make the next leak less likely</h2>
+<ul>
+<li>Keep keys out of code. Load them from environment variables or a secrets manager.</li>
+<li>Scan before you commit. gitleaks runs as a <a href="https://pre-commit.com/">pre-commit</a> hook, and GitHub push protection blocks many known key formats when you push.</li>
+<li>Give keys the smallest permissions and, where the provider supports it, an expiry date or IP restrictions.</li>
+<li>Mask logs before sharing them. <a href="/">PasteSafe</a> does it in your browser.</li>
+</ul>
+
+<h2>What PasteSafe cannot do</h2>
+<p>PasteSafe never contacts any service, so it cannot tell you whether a key is valid, whether it was used, or revoke it for you. It also misses keys in formats it has no rule for when they sit under a neutral name and do not look random. The fix for a leaked key is always in the provider's own console.</p>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>What happens if you leak an API key?</h3>
+      <p>Anyone who finds it can use it with the key's permissions until you revoke it. Depending on the key, that means usage charges on your account, access to your data, or messages and payments sent in your name. Keys in public repositories are found by automated scanners.</p>
+      <h3>Is deleting the commit or message enough?</h3>
+      <p>No. The key still works, and copies may already exist in clones, forks, notifications, caches and backups. Revoke or rotate the key first, then clean up.</p>
+      <h3>How do I know if a leaked key was used?</h3>
+      <p>Check the provider's usage, billing and audit logs for activity you do not recognize since the leak, such as AWS CloudTrail events for that access key ID. If the logs show nothing, still rotate the key.</p>
+      <h3>Can PasteSafe check if a key is still valid?</h3>
+      <p>No. PasteSafe never makes network requests, so it cannot test a key. It finds and masks keys in text, so they do not leak again when you share a log.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/remove-secrets-from-git-history/"><b>How to remove a secret from git history</b><span>Rotate the secret, find every commit that contains it, rewrite history with git filter-repo or BFG, and clean up forks, clones and pull request refs.</span></a></li>
+      <li><a href="/guides/sanitize-logs-before-sharing/"><b>How to sanitize logs before you share them</b><span>Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.</span></a></li>
+      <li><a href="/guides/share-env-file-safely/"><b>How to share .env files securely</b><span>Share .env values through a secrets manager, commit a .env.example, and mask credentials when you only need to show the file to an AI, an issue or support.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

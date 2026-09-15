@@ -14,3 +14,17 @@ Known key formats are caught reliably. Plain passwords, names and street address
 - [FAQ](https://pastesafe.vibe-coding.fans/#faq): masking PII and API keys in logs, and pasting logs into ChatGPT safely
 - [Source on GitHub](https://github.com/qxZap/pastesafe): MIT License
 - [vibe-coding.fans](https://vibe-coding.fans/): more free tools from the same makers
+
+## Guides
+
+- [All guides](https://pastesafe.vibe-coding.fans/guides/): step by step guides to masking secrets and personal data before sharing text
+- [How to mask PII in logs](https://pastesafe.vibe-coding.fans/guides/mask-pii-in-logs/): what counts as PII in logs, masking it in a copy, sed alternatives, and logging less of it
+- [How to mask sensitive data in logs](https://pastesafe.vibe-coding.fans/guides/mask-sensitive-data-in-logs/): redaction in pino, Python logging, Logback, Log4j 2 and Go slog
+- [How to sanitize logs before you share them](https://pastesafe.vibe-coding.fans/guides/sanitize-logs-before-sharing/): a checklist for GitHub issues, tickets, chat and AI, with gitleaks and sed
+- [Is it safe to paste code and logs into ChatGPT?](https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-paste-code-into-chatgpt/): what happens to pasted text and what to take out first
+- [What to do if you leaked an API key](https://pastesafe.vibe-coding.fans/guides/what-to-do-if-you-leaked-an-api-key/): revoke and rotate first, then check usage and clean up
+- [How to remove a secret from git history](https://pastesafe.vibe-coding.fans/guides/remove-secrets-from-git-history/): git filter-repo, BFG, and the copies a force push does not reach
+- [How to sanitize a HAR file](https://pastesafe.vibe-coding.fans/guides/sanitize-har-file/): what Chrome's sanitized export removes, jq cleanup, and masking the rest
+- [How to mask credit card numbers in logs and text](https://pastesafe.vibe-coding.fans/guides/mask-credit-card-numbers/): the Luhn check, masking in code and sed, and PCI DSS display rules
+- [How to share .env files securely](https://pastesafe.vibe-coding.fans/guides/share-env-file-safely/): secrets managers for values, masking for debugging
+- [Is it safe to share a JWT token?](https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-share-a-jwt/): what a JWT exposes, decoding it locally, and masking it

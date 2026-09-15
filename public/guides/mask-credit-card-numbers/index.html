@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to mask credit card numbers in logs and text | PasteSafe</title>
+<meta name="description" content="Mask card numbers in logs and text: how to spot a PAN with the Luhn check, masking in JavaScript, Python and sed, and what PCI DSS says about display.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/mask-credit-card-numbers/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/mask-credit-card-numbers/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="How to mask credit card numbers in logs and text">
+<meta property="og:description" content="Mask card numbers in logs and text: how to spot a PAN with the Luhn check, masking in JavaScript, Python and sed, and what PCI DSS says about display.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to mask credit card numbers in logs and text">
+<meta name="twitter:description" content="Mask card numbers in logs and text: how to spot a PAN with the Luhn check, masking in JavaScript, Python and sed, and what PCI DSS says about display.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to mask credit card numbers in logs and text",
+  "description": "Mask card numbers in logs and text: how to spot a PAN with the Luhn check, masking in JavaScript, Python and sed, and what PCI DSS says about display.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/mask-credit-card-numbers/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/mask-credit-card-numbers/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "How to mask credit card numbers in logs and text",
+      "item": "https://pastesafe.vibe-coding.fans/guides/mask-credit-card-numbers/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does masking a credit card number mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Replacing most of its digits so the full number cannot be read, for example **** **** **** 4242. People can still recognize which card was used without seeing the number."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many digits of a card number can I show?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PCI DSS allows at most the BIN and the last four digits to be displayed to people without a business need to see more. Most apps show only the last four."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I tell if a number is a credit card number?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Check the length (13 to 19 digits), the prefix and the Luhn checksum. A number that passes all three is shaped like a card number, but only the card network can say whether the card exists."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does PasteSafe keep the card numbers it finds?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Only in the memory of your browser tab, so it can put them back into an AI reply if you ask it to. Nothing is uploaded or saved, and closing the tab clears it."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">How to mask credit card numbers in logs and text</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>How to mask credit card numbers in logs and text</h1>
+      <p class="g-lead">Card numbers slip into payment error logs, request dumps, CSV exports and support tickets. Here is how to recognize them, how to mask them in code or on the command line, and how to clean a log you need to share.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>Why card numbers in logs are a problem</h2>
+<p>A card number, or PAN (primary account number), is exactly what fraudsters want, and handling it is regulated. PCI DSS, the security standard for anyone who processes card data, requires the PAN to be masked when displayed, so that at most the BIN (the first digits, which identify the issuer) and the last four digits are visible. In PCI DSS 4.0 that is requirement 3.4.1. Stored PANs must be unreadable, and card security codes must not be kept at all after authorization.</p>
+<p>A log file full of card numbers means the log storage, its backups and everyone who can read them are handling card data too.</p>
+
+<h2>How to recognize a card number</h2>
+<ul>
+<li><strong>Length:</strong> 13 to 19 digits, usually printed in groups of four. American Express uses 15 digits grouped 4, 6 and 5.</li>
+<li><strong>Prefix:</strong> the first digits identify the network. Visa starts with 4, Mastercard with 51 to 55 or 2221 to 2720, American Express with 34 or 37.</li>
+<li><strong>Checksum:</strong> the last digit is a Luhn check digit. Starting from the right, double every second digit, subtract 9 from any result over 9, and add everything up. A valid number gives a multiple of 10.</li>
+</ul>
+<p>The Luhn check is what separates a card number from an order ID or a timestamp. It does not prove a card exists: the test numbers below all pass it.</p>
+
+<h2>Example: masking card numbers in a log</h2>
+<p>These are the standard test card numbers. Before highlights what PasteSafe finds, After is its exact output.</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>2026-09-15T09:41:09Z ERROR charge declined card=<mark class="leak">4242 4242 4242 4242</mark> exp=12/34 cvc=123 name=&quot;Jane Doe&quot;
+2026-09-15T09:41:10Z INFO  retry pan=<mark class="leak">5555555555554444</mark> amount=49.00 currency=USD
+2026-09-15T09:41:11Z INFO  amex <mark class="leak">3782 822463 10005</mark> approved, receipt to <mark class="leak">jane.doe@example.com</mark>
+2026-09-15T09:41:12Z WARN  import row 88: 4242.4242.4242.4242 stored as 424242******4242</code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>2026-09-15T09:41:09Z ERROR charge declined card=<mark class="hit">CARD_1</mark> exp=12/34 cvc=123 name=&quot;Jane Doe&quot;
+2026-09-15T09:41:10Z INFO  retry pan=<mark class="hit">CARD_2</mark> amount=49.00 currency=USD
+2026-09-15T09:41:11Z INFO  amex <mark class="hit">CARD_3</mark> approved, receipt to <mark class="hit">EMAIL_1</mark>
+2026-09-15T09:41:12Z WARN  import row 88: 4242.4242.4242.4242 stored as 424242******4242</code></pre></figure>
+</div>
+<p>The Visa, Mastercard and American Express numbers each get their own placeholder. The expiry date, the CVC and the cardholder name stay, and so does the number written with dots, because PasteSafe only accepts spaces or dashes between groups. The already masked number is left alone, which is what you want.</p>
+
+<h2>Mask a card number in code</h2>
+<p>To display a card number, keep only the last four digits. In JavaScript:</p>
+<pre class="code" tabindex="0"><code>const maskPan = pan =&gt; pan.replace(/\d(?=(?:\D*\d){4})/g, '*');
+
+maskPan('4242 4242 4242 4242'); // '**** **** **** 4242'</code></pre>
+<p>To find card numbers in free text, match candidates first and keep only those that pass the Luhn check. In Python:</p>
+<pre class="code" tabindex="0"><code>import re
+
+CANDIDATE = re.compile(r'\b(?:\d[ -]?){12,18}\d\b')
+
+def luhn_ok(digits):
+    total = 0
+    for i, d in enumerate(reversed(digits)):
+        n = int(d)
+        if i % 2:
+            n *= 2
+            if n &gt; 9:
+                n -= 9
+        total += n
+    return total % 10 == 0
+
+def mask_cards(text):
+    def repl(m):
+        digits = re.sub(r'\D', '', m.group())
+        return '[CARD]' if luhn_ok(digits) else m.group()
+    return CANDIDATE.sub(repl, text)
+
+print(mask_cards('card 4242 4242 4242 4242 order 1234 5678 9012 3456'))
+# card [CARD] order 1234 5678 9012 3456</code></pre>
+<p>This is a starting point: two numbers written next to each other can merge into one candidate that fails the check.</p>
+
+<h2>On the command line</h2>
+<pre class="code" tabindex="0"><code>sed -E 's/\b([0-9]{4}[ -]?){3}[0-9]{4}\b/[CARD]/g' payments.log &gt; payments.masked.log</code></pre>
+<p>This masks any 16 digit number in groups of four. There is no Luhn check, so it also masks order numbers, and it misses 15 digit American Express numbers.</p>
+
+<h2>Clean a log with PasteSafe</h2>
+<ol>
+<li>Paste the log into <a href="/">PasteSafe</a>, or drop the file onto the editor.</li>
+<li>Card numbers that pass the prefix and Luhn checks become <code>CARD_1</code>, <code>CARD_2</code> and so on. The same card always gets the same placeholder, so you can still see that two failed charges used the same card.</li>
+<li>Remove expiry dates, CVCs and names by hand if they are in the log.</li>
+<li>Copy the cleaned text and share it.</li>
+</ol>
+
+<h2>What PasteSafe does not catch</h2>
+<ul>
+<li>Expiry dates, CVCs and cardholder names.</li>
+<li>Numbers with dots or other separators between groups, and numbers that fail the Luhn check, such as a mistyped card number.</li>
+<li>Card numbers split across fields or lines.</li>
+</ul>
+<p>It recognizes numbers that start like Visa, Mastercard, American Express, Diners Club, JCB, Discover and UnionPay cards. Check the result before you share it.</p>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>What does masking a credit card number mean?</h3>
+      <p>Replacing most of its digits so the full number cannot be read, for example **** **** **** 4242. People can still recognize which card was used without seeing the number.</p>
+      <h3>How many digits of a card number can I show?</h3>
+      <p>PCI DSS allows at most the BIN and the last four digits to be displayed to people without a business need to see more. Most apps show only the last four.</p>
+      <h3>How can I tell if a number is a credit card number?</h3>
+      <p>Check the length (13 to 19 digits), the prefix and the Luhn checksum. A number that passes all three is shaped like a card number, but only the card network can say whether the card exists.</p>
+      <h3>Does PasteSafe keep the card numbers it finds?</h3>
+      <p>Only in the memory of your browser tab, so it can put them back into an AI reply if you ask it to. Nothing is uploaded or saved, and closing the tab clears it.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/mask-pii-in-logs/"><b>How to mask PII in logs</b><span>Emails, IP addresses, card numbers and phone numbers pile up in logs. See what counts as PII, how to mask it in a log you have, and how to stop logging it.</span></a></li>
+      <li><a href="/guides/mask-sensitive-data-in-logs/"><b>How to mask sensitive data in logs</b><span>Redact passwords, tokens and personal data in logs with pino, Python logging, Logback, Log4j 2 and Go slog, and clean up logs that already contain secrets.</span></a></li>
+      <li><a href="/guides/sanitize-logs-before-sharing/"><b>How to sanitize logs before you share them</b><span>Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

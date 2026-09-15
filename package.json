@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node serve.mjs",
+    "guides": "node tools/build-guides.mjs",
     "test": "node --test"
   }
 }

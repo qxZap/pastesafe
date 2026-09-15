@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to mask sensitive data in logs in your code | PasteSafe</title>
+<meta name="description" content="Redact passwords, tokens and personal data in logs with pino, Python logging, Logback, Log4j 2 and Go slog, and clean up logs that already contain secrets.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/mask-sensitive-data-in-logs/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/mask-sensitive-data-in-logs/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="How to mask sensitive data in logs in your code">
+<meta property="og:description" content="Redact passwords, tokens and personal data in logs with pino, Python logging, Logback, Log4j 2 and Go slog, and clean up logs that already contain secrets.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to mask sensitive data in logs in your code">
+<meta name="twitter:description" content="Redact passwords, tokens and personal data in logs with pino, Python logging, Logback, Log4j 2 and Go slog, and clean up logs that already contain secrets.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to mask sensitive data in logs",
+  "description": "Redact passwords, tokens and personal data in logs with pino, Python logging, Logback, Log4j 2 and Go slog, and clean up logs that already contain secrets.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/mask-sensitive-data-in-logs/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/mask-sensitive-data-in-logs/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "How to mask sensitive data in logs",
+      "item": "https://pastesafe.vibe-coding.fans/guides/mask-sensitive-data-in-logs/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is log masking?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Log masking replaces sensitive values in log output, such as passwords, tokens, card numbers and emails, with a fixed marker or a placeholder, so the log can be stored and read without exposing those values."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I mask in the application or in the log pipeline?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In the application when you can, because every later copy is then clean. Masking in a log shipper or log platform is a useful second layer, but by then the raw line has already been written somewhere."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is hashing an email address enough?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not to hide who the user is. Email addresses are easy to guess, so a plain hash can be matched by hashing a list of candidate addresses. A hash is useful for grouping lines by user, not for keeping the user private."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can PasteSafe replace redaction in my logging code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. PasteSafe cleans a copy of a log before you share it. It does not change the logs your services write, so set up redaction in the logger as well."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">How to mask sensitive data in logs</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>How to mask sensitive data in logs</h1>
+      <p class="g-lead">The reliable place to remove passwords, tokens and personal data from logs is the logger itself, before anything is written. Here is how to set that up in Node, Python, Java and Go, and what to do with logs that already contain secrets.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>Why redact at the logger</h2>
+<p>Once a line is written it gets copied: to log files, to a log shipper, to a search index that many people can query, to backups, and into exports for vendors and support. A secret that reaches the first file usually reaches all of them. Removing it where the log line is built is the one place that covers every copy.</p>
+<p>There are two ways to do it, and most setups need both:</p>
+<ul>
+<li><strong>By field.</strong> With structured (JSON) logging, replace known keys such as <code>password</code>, <code>authorization</code>, <code>cookie</code> and <code>email</code>. This is exact and cheap.</li>
+<li><strong>By pattern.</strong> Run regular expressions over the message text for values that end up inside strings, such as <code>token=...</code> in a URL or a connection string in an exception. This catches more, costs CPU on every line, and still misses formats you did not think of.</li>
+</ul>
+
+<h2>Node.js with pino</h2>
+<p>pino has redaction built in. List the paths to replace:</p>
+<pre class="code" tabindex="0"><code>const pino = require('pino');
+
+const logger = pino({
+  redact: {
+    paths: ['req.headers.authorization', 'req.headers.cookie', 'user.email', 'body.password'],
+    censor: '[REDACTED]',
+  },
+});
+
+logger.info({ user: { id: 4821, email: 'jane.doe@example.com' } }, 'login ok');
+// ... "user":{"id":4821,"email":"[REDACTED]"},"msg":"login ok"</code></pre>
+<p>Without <code>censor</code> the replacement is <code>[Redacted]</code>. Paths are exact, so a password nested under a key you did not list is still logged.</p>
+
+<h2>Python logging</h2>
+<p>A filter attached to a handler sees every record that handler writes, including records from other modules' loggers:</p>
+<pre class="code" tabindex="0"><code>import logging
+import re
+
+SECRET = re.compile(r'(password|token|api_key)=[^&amp;\s]+', re.IGNORECASE)
+
+class RedactFilter(logging.Filter):
+    def filter(self, record):
+        record.msg = SECRET.sub(r'\1=[REDACTED]', record.getMessage())
+        record.args = None
+        return True
+
+handler = logging.StreamHandler()
+handler.addFilter(RedactFilter())
+logging.basicConfig(level=logging.INFO, handlers=[handler])
+
+logging.info('retrying %s', 'https://api.example.com/v1?token=abc123&amp;page=2')
+# INFO:root:retrying https://api.example.com/v1?token=[REDACTED]&amp;page=2</code></pre>
+<p>The filter formats the message with <code>getMessage()</code> first, so values passed as arguments are covered too. Exception tracebacks are added later by the formatter and are not touched.</p>
+
+<h2>Java with Logback or Log4j 2</h2>
+<p>Both can rewrite the message in the pattern layout with a regular expression. Logback:</p>
+<pre class="code" tabindex="0"><code>&lt;encoder&gt;
+  &lt;pattern&gt;%d %-5level %logger{36} - %replace(%msg){'(password|token)=\S+', '$1=[REDACTED]'}%n&lt;/pattern&gt;
+&lt;/encoder&gt;</code></pre>
+<p>Log4j 2:</p>
+<pre class="code" tabindex="0"><code>&lt;PatternLayout pattern="%d %-5level %logger{36} - %replace{%msg}{(password|token)=\S+}{$1=[REDACTED]}%n"/&gt;</code></pre>
+<p>This only changes what that one appender prints. JSON encoders and other appenders need their own masking.</p>
+
+<h2>Go with log/slog</h2>
+<pre class="code" tabindex="0"><code>opts := &amp;slog.HandlerOptions{
+	ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+		switch a.Key {
+		case "password", "token", "authorization", "email":
+			return slog.String(a.Key, "[REDACTED]")
+		}
+		return a
+	},
+}
+logger := slog.New(slog.NewJSONHandler(os.Stdout, opts))
+logger.Info("login ok", "user_id", 4821, "email", "jane.doe@example.com")
+// {"time":"...","level":"INFO","msg":"login ok","user_id":4821,"email":"[REDACTED]"}</code></pre>
+
+<h2>Test that it keeps working</h2>
+<p>Redaction breaks quietly when someone renames a field or adds a new log line. Add one test that logs a known fake secret and fails if it appears in the output. It is a few lines, and it catches the regression the day it happens.</p>
+
+<h2>Logs that already contain secrets</h2>
+<p>Logger redaction does nothing for files written before it existed, or for output from third party tools. When you need to share one of those, mask a copy. Before highlights what PasteSafe finds, After is its exact output:</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>2026-09-15 09:41:07.312 ERROR SqlExceptionHelper - Connection refused: jdbc:postgresql://db.example.com:5432/billing?user=billing&amp;password=<mark class="leak">Wint3r-Fake-Pass</mark>
+2026-09-15 09:41:07.498 DEBUG RestTemplate - POST https://api.example.com/v1/charges headers=[Authorization:&quot;Bearer <mark class="leak">FakeBearer7fK2mZpL9wR3nB8vT1yCq</mark>&quot;]
+2026-09-15 09:41:07.502 INFO  ChargeService - charge failed for <mark class="leak">jane.doe@example.com</mark>, retrying from <mark class="leak">203.0.113.9</mark>
+2026-09-15 09:41:07.610 WARN  LoginController - login failed for admin with password hunter2</code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>2026-09-15 09:41:07.312 ERROR SqlExceptionHelper - Connection refused: jdbc:postgresql://db.example.com:5432/billing?user=billing&amp;password=<mark class="hit">PASSWORD_1</mark>
+2026-09-15 09:41:07.498 DEBUG RestTemplate - POST https://api.example.com/v1/charges headers=[Authorization:&quot;Bearer <mark class="hit">BEARER_TOKEN_1</mark>&quot;]
+2026-09-15 09:41:07.502 INFO  ChargeService - charge failed for <mark class="hit">EMAIL_1</mark>, retrying from <mark class="hit">IP_1</mark>
+2026-09-15 09:41:07.610 WARN  LoginController - login failed for admin with password hunter2</code></pre></figure>
+</div>
+<ol>
+<li>Paste the log into <a href="/">PasteSafe</a> or drop the file onto the editor.</li>
+<li>Known key formats (more than 200 rules from gitleaks), Bearer and Basic headers, passwords in connection strings, values under names like password, secret or token, emails, IP addresses, card numbers, IBANs and phone numbers become placeholders.</li>
+<li>Copy the cleaned text into the ticket, chat or AI assistant.</li>
+</ol>
+<p>If a real key was in a log other people could read, rotate it. See <a href="/guides/what-to-do-if-you-leaked-an-api-key/">what to do if you leaked an API key</a>.</p>
+
+<h2>What PasteSafe does not catch</h2>
+<ul>
+<li>Passwords written as plain words in a sentence, like the last line of the example.</li>
+<li>Secrets in formats it has no rule for, when they sit under a neutral name and do not look random enough to count as high entropy.</li>
+<li>Names, street addresses and other personal data without a fixed format.</li>
+</ul>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>What is log masking?</h3>
+      <p>Log masking replaces sensitive values in log output, such as passwords, tokens, card numbers and emails, with a fixed marker or a placeholder, so the log can be stored and read without exposing those values.</p>
+      <h3>Should I mask in the application or in the log pipeline?</h3>
+      <p>In the application when you can, because every later copy is then clean. Masking in a log shipper or log platform is a useful second layer, but by then the raw line has already been written somewhere.</p>
+      <h3>Is hashing an email address enough?</h3>
+      <p>Not to hide who the user is. Email addresses are easy to guess, so a plain hash can be matched by hashing a list of candidate addresses. A hash is useful for grouping lines by user, not for keeping the user private.</p>
+      <h3>Can PasteSafe replace redaction in my logging code?</h3>
+      <p>No. PasteSafe cleans a copy of a log before you share it. It does not change the logs your services write, so set up redaction in the logger as well.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/mask-pii-in-logs/"><b>How to mask PII in logs</b><span>Emails, IP addresses, card numbers and phone numbers pile up in logs. See what counts as PII, how to mask it in a log you have, and how to stop logging it.</span></a></li>
+      <li><a href="/guides/sanitize-logs-before-sharing/"><b>How to sanitize logs before you share them</b><span>Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.</span></a></li>
+      <li><a href="/guides/what-to-do-if-you-leaked-an-api-key/"><b>What to do if you leaked an API key</b><span>Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

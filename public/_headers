@@ -6,6 +6,10 @@
 /js/*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; font-src 'self'; frame-ancestors 'none'; form-action 'none'; base-uri 'none'
 
+# Guides are plain HTML and CSS: no scripts run at all (JSON-LD blocks are data, not script).
+/guides/*
+  Content-Security-Policy: default-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; frame-ancestors 'none'; form-action 'none'; base-uri 'none'
+
 # The service worker may only talk to this same origin, to cache the app for offline use.
 /sw.js
   Content-Security-Policy: default-src 'none'; connect-src 'self'

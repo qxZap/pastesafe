@@ -56,7 +56,18 @@ npm test
 
 The generator parses the TOML subset gitleaks uses and translates Go regex syntax: a leading or mid-pattern `(?i)` and `(?i:...)` groups become the `i` flag for the whole regex (Node 22 has no inline modifiers, so this is slightly broader than gitleaks), `(?-i:...)` becomes a plain group, `(?s:.)` becomes `[\s\S]`, `\z` becomes `$`, `[[:alnum:]]` is expanded and named groups become plain groups. `paths` are ignored because a paste has no file name, so the one path-only rule (`pkcs12-file`) is skipped and listed in `rules.js`. Unknown syntax makes the generator throw instead of silently dropping a rule.
 
-After changing any file in `public/`, update the `FILES` list and bump `CACHE` in `public/sw.js`. The tests fail if the list is out of date.
+After changing any file in `public/` (except `public/guides/`), update the `FILES` list and bump `CACHE` in `public/sw.js`. The tests fail if the list is out of date.
+
+## Guides
+
+`public/guides/` holds static how-to pages: masking PII and sensitive data in logs, sanitizing logs and HAR files, pasting code into ChatGPT, leaked API keys, secrets in git history, card numbers, `.env` files and JWTs. They have no JavaScript, their own CSP (`/guides/*` in `public/_headers`), and are not precached by the service worker, which still serves them network first.
+
+The HTML is generated, so edit the data, not the pages:
+
+- `tools/guides-data.mjs` holds each guide: slug, title, description, lead, body HTML with a `%EXAMPLE%` marker, a before/after example, FAQ and related guides.
+- `npm run guides` runs `tools/build-guides.mjs`, which writes `public/guides/**/index.html` and `public/sitemap.xml`. The before/after block is the real output of `scan()` from `public/js/detect.js`, and the build fails if a value listed in `hides` is not masked or a value in `keeps` is.
+
+To add a guide: add an entry to `GUIDES`, run `npm run guides`, add a line to `public/llms.txt`, run `npm test`. The tests check that the committed files match the generator, title (50 to 60 characters) and description (140 to 155) lengths, one h1, that the FAQ JSON-LD matches the visible FAQ, no scripts or inline styles, and that every internal link resolves.
 
 ## Open Graph image
 

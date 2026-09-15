@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Is it safe to share a JWT token in logs or chat? | PasteSafe</title>
+<meta name="description" content="A JWT works for whoever holds it until it expires, and anyone can read its payload. Learn where tokens leak, how to decode one locally and how to mask it.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-share-a-jwt/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-share-a-jwt/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="Is it safe to share a JWT token in logs or chat?">
+<meta property="og:description" content="A JWT works for whoever holds it until it expires, and anyone can read its payload. Learn where tokens leak, how to decode one locally and how to mask it.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Is it safe to share a JWT token in logs or chat?">
+<meta name="twitter:description" content="A JWT works for whoever holds it until it expires, and anyone can read its payload. Learn where tokens leak, how to decode one locally and how to mask it.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Is it safe to share a JWT token?",
+  "description": "A JWT works for whoever holds it until it expires, and anyone can read its payload. Learn where tokens leak, how to decode one locally and how to mask it.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-share-a-jwt/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-share-a-jwt/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Is it safe to share a JWT token?",
+      "item": "https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-share-a-jwt/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is it safe to share a JWT token?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not while it is valid. Anyone who has it can use it until it expires, and anyone can read its payload even after that. Mask it before sharing a log, and share only the decoded claims you need."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can a JWT be decoded without the secret?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The header and payload are only base64url encoded, so anyone can read them. The secret or private key is needed to create a valid signature, not to read the token."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does an expired JWT still expose data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. It no longer grants access, but the payload still shows whatever the issuer put in it, such as the user ID, email address and roles."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I revoke a JWT?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not on its own. A server accepts a valid JWT until it expires unless it keeps a list of revoked tokens or the signing key is rotated. Revoking the refresh token stops new access tokens from being issued."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">Is it safe to share a JWT token?</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>Is it safe to share a JWT token?</h1>
+      <p class="g-lead">Not while it is valid. A JWT is usually a bearer credential: whoever holds it can call the API as that user until it expires. And its payload is readable by anyone, even after it expires.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>What a JWT is</h2>
+<p>A JSON Web Token is three base64url encoded parts joined by dots: a header, a payload and a signature. The payload typically holds a user ID, often an email address and roles, and an expiry time in the <code>exp</code> claim.</p>
+<p>Two properties matter when you are about to paste one somewhere:</p>
+<ul>
+<li><strong>It works for whoever has it.</strong> An API that accepts a JWT in an <code>Authorization: Bearer</code> header or a cookie does not know who is sending it. A copied token works like the original until it expires, unless the server keeps a list of revoked tokens.</li>
+<li><strong>It is signed, not encrypted.</strong> The signature stops anyone from changing the payload, but anyone can read it. An expired token still shows the user's ID, email and roles. Encrypted tokens (JWE) exist, but they are much less common.</li>
+</ul>
+<p>Refresh tokens are worse: they last longer and can be exchanged for new access tokens.</p>
+
+<h2>Where JWTs leak</h2>
+<ul>
+<li>Debug logs that print request headers.</li>
+<li>HAR files and Copy as cURL output from browser DevTools, which include headers and cookies.</li>
+<li>URLs: some sign in flows return tokens in the redirect URL, which can end up in browser history and, when the token is in the query string, in server logs.</li>
+<li>Screenshots of DevTools, local storage or cookies.</li>
+<li>Bug reports and AI chats where someone pasted the token to ask what is wrong with it.</li>
+</ul>
+
+<h2>Decode a JWT without pasting it into a website</h2>
+<p>You do not need an online decoder to read the payload. With Node.js or Python:</p>
+<pre class="code" tabindex="0"><code>node -e "console.log(Buffer.from(process.argv[1].split('.')[1], 'base64url').toString())" "$TOKEN"
+python3 -c "import base64,sys; p=sys.argv[1].split('.')[1]; print(base64.urlsafe_b64decode(p + '=' * (-len(p) % 4)).decode())" "$TOKEN"</code></pre>
+<p>Both print the payload JSON. Neither checks the signature, which is fine when you only want to read it.</p>
+
+<h2>Mask JWTs before sharing</h2>
+<p>Before highlights what PasteSafe finds, After is its exact output:</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>GET /v1/invoices HTTP/1.1
+Host: api.example.com
+Authorization: Bearer <mark class="leak">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ODIxIiwiZW1haWwiOiJqYW5lLmRvZUBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiJ9.FakeSignatureForDocs0nly7fK2mZpL9wR3nB8vT1y</mark>
+Cookie: refresh_token=<mark class="leak">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ODIxIiwidHlwIjoicmVmcmVzaCJ9.FakeRefreshSignatureForDocs0nly9wR3nB8vT1yC</mark>; theme=dark
+
+HTTP/1.1 302 Found
+Location: https://app.example.com/callback?id_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ODIxIiwiYXVkIjoiYmlsbGluZy13ZWIifQ.FakeIdTokenSignatureForDocs0nlyQ2mZpL9wR3n&amp;state=af0ifjsldkj
+
+decoded: {&quot;sub&quot;:&quot;4821&quot;,&quot;email&quot;:&quot;<mark class="leak">jane.doe@example.com</mark>&quot;,&quot;role&quot;:&quot;admin&quot;}</code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>GET /v1/invoices HTTP/1.1
+Host: api.example.com
+Authorization: Bearer <mark class="hit">JWT_1</mark>
+Cookie: refresh_token=<mark class="hit">JWT_2</mark>; theme=dark
+
+HTTP/1.1 302 Found
+Location: https://app.example.com/callback?id_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ODIxIiwiYXVkIjoiYmlsbGluZy13ZWIifQ.FakeIdTokenSignatureForDocs0nlyQ2mZpL9wR3n&amp;state=af0ifjsldkj
+
+decoded: {&quot;sub&quot;:&quot;4821&quot;,&quot;email&quot;:&quot;<mark class="hit">EMAIL_1</mark>&quot;,&quot;role&quot;:&quot;admin&quot;}</code></pre></figure>
+</div>
+<p>The token in the header and the refresh token cookie each get their own placeholder. The token in the redirect URL does not: PasteSafe can miss a JWT in a query string when another parameter follows it, so shorten such URLs by hand. On the decoded payload line only the email is masked. The user ID and role stay, so remove decoded payloads by hand if those matter.</p>
+<ol>
+<li>Paste the log, request or HAR excerpt into <a href="/">PasteSafe</a>.</li>
+<li>JWTs become <code>JWT_1</code>, other Bearer tokens <code>BEARER_TOKEN_1</code>, and values under names like <code>token</code> or <code>secret</code> become <code>SECRET_1</code>.</li>
+<li>Read the result and copy it.</li>
+</ol>
+
+<h2>If a valid token leaked</h2>
+<ul>
+<li>Revoke the refresh token and end the session in your identity provider, if it supports that. The access token itself may keep working until it expires.</li>
+<li>If tokens cannot be revoked one by one, rotating the signing key is the immediate fix. It invalidates every token signed with that key, so everyone has to sign in again.</li>
+<li>Keep access token lifetimes short, so a leaked token stops working soon.</li>
+</ul>
+
+<h2>What PasteSafe does not catch</h2>
+<ul>
+<li>A JWT in a URL query string with another parameter after it, like the redirect URL above.</li>
+<li>A JWT split across lines, for example in wrapped log output.</li>
+<li>Decoded payloads: user IDs, names and roles in plain JSON.</li>
+<li>Opaque session tokens such as a <code>sessionid</code> cookie with a hex value, sent together with other cookies.</li>
+</ul>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>Is it safe to share a JWT token?</h3>
+      <p>Not while it is valid. Anyone who has it can use it until it expires, and anyone can read its payload even after that. Mask it before sharing a log, and share only the decoded claims you need.</p>
+      <h3>Can a JWT be decoded without the secret?</h3>
+      <p>Yes. The header and payload are only base64url encoded, so anyone can read them. The secret or private key is needed to create a valid signature, not to read the token.</p>
+      <h3>Does an expired JWT still expose data?</h3>
+      <p>Yes. It no longer grants access, but the payload still shows whatever the issuer put in it, such as the user ID, email address and roles.</p>
+      <h3>Can I revoke a JWT?</h3>
+      <p>Not on its own. A server accepts a valid JWT until it expires unless it keeps a list of revoked tokens or the signing key is rotated. Revoking the refresh token stops new access tokens from being issued.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/sanitize-har-file/"><b>How to sanitize a HAR file</b><span>HAR files hold session cookies, tokens and passwords. See what Chrome's sanitized export removes, clean up with jq, and mask what is left in your browser.</span></a></li>
+      <li><a href="/guides/what-to-do-if-you-leaked-an-api-key/"><b>What to do if you leaked an API key</b><span>Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.</span></a></li>
+      <li><a href="/guides/sanitize-logs-before-sharing/"><b>How to sanitize logs before you share them</b><span>Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Is it safe to paste code and logs into ChatGPT? | PasteSafe</title>
+<meta name="description" content="What happens to code and logs you paste into ChatGPT, what to take out first, and how to mask keys and customer data in your browser before you hit send.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-paste-code-into-chatgpt/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-paste-code-into-chatgpt/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="Is it safe to paste code and logs into ChatGPT?">
+<meta property="og:description" content="What happens to code and logs you paste into ChatGPT, what to take out first, and how to mask keys and customer data in your browser before you hit send.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Is it safe to paste code and logs into ChatGPT?">
+<meta name="twitter:description" content="What happens to code and logs you paste into ChatGPT, what to take out first, and how to mask keys and customer data in your browser before you hit send.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Is it safe to paste code and logs into ChatGPT?",
+  "description": "What happens to code and logs you paste into ChatGPT, what to take out first, and how to mask keys and customer data in your browser before you hit send.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-paste-code-into-chatgpt/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-paste-code-into-chatgpt/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Is it safe to paste code and logs into ChatGPT?",
+      "item": "https://pastesafe.vibe-coding.fans/guides/is-it-safe-to-paste-code-into-chatgpt/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does ChatGPT store the code I paste?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Conversations are stored on OpenAI's servers. How long they are kept and whether they are used to improve models depends on your plan and your data control settings, so check both, and your company's policy, before pasting work code."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to paste API keys into ChatGPT?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Treat a key you pasted into any chat as leaked and rotate it. Mask keys before pasting: the AI does not need the real value to help with the code around it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can other ChatGPT users see my code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Other users do not see your conversations unless you share a link. The risks are storage on the provider's servers, possible use for training depending on your settings, and anyone who gets into your account."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does PasteSafe work with Claude, Gemini and Copilot too?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. PasteSafe cleans text in your browser and you paste the result wherever you like, so it works the same for any assistant, ticket system or chat."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">Is it safe to paste code and logs into ChatGPT?</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>Is it safe to paste code and logs into ChatGPT?</h1>
+      <p class="g-lead">Usually the code is not the problem. The API keys, connection strings and customer data that come along with it are. Here is what happens to what you paste, what to take out first, and how to do that in a few seconds.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>The short answer</h2>
+<p>It is as safe as sending that text to any outside service, because that is what it is. Code and logs you paste into ChatGPT, Claude, Gemini or Copilot Chat are sent to the provider and stored on its servers. So the real questions are whether your company allows it, and whether the text contains anything you would not email to a stranger.</p>
+<p>Whether the code itself may be shared is a question for your company's AI policy. Secrets and personal data are different: a key in a chat is a working credential in a place you do not control, and customer data in a prompt is customer data shared with a third party.</p>
+
+<h2>What happens to what you paste</h2>
+<ul>
+<li>The conversation is stored by the provider. How long, and whether it can be used to improve models, depends on your plan and settings. ChatGPT, for example, has a data control that stops your chats from being used for training, and business plans come with their own terms.</li>
+<li>Stored conversations may be reviewed by the provider, for example to investigate abuse.</li>
+<li>You cannot take a message back. Deleting the chat later does not revoke a key that was in it.</li>
+<li>Chats can be shared by link, exported, or read by anyone who gets into your account.</li>
+</ul>
+<p>In 2023 Samsung restricted staff use of generative AI tools after engineers pasted internal source code into ChatGPT, as <a href="https://techcrunch.com/2023/05/02/samsung-bans-use-of-generative-ai-tools-like-chatgpt-after-april-internal-data-leak/">reported by TechCrunch</a>. Nobody was hacked. It was ordinary debugging.</p>
+
+<h2>What to take out before you paste</h2>
+<ul>
+<li>API keys, tokens and passwords, including ones hardcoded just for testing.</li>
+<li>Connection strings with credentials, and <code>.env</code> or config files.</li>
+<li>Private keys and certificates.</li>
+<li>Customer data in logs, fixtures and database dumps: emails, IP addresses, card numbers, phone numbers.</li>
+<li>Anything your company classifies as confidential, such as unreleased product names or internal hostnames.</li>
+</ul>
+<p>Code that reads a secret from the environment, like <code>process.env.STRIPE_SECRET_KEY</code>, is fine to paste. The value is not in it.</p>
+
+<h2>Example: a question with a leak in it</h2>
+<p>A typical paste: a bit of code and the error it throws. Before highlights what PasteSafe finds, After is its exact output.</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>// charge.js
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const fallback = require('stripe')('<mark class="leak">sk_test_51FakeKeyForDocs0nlyNotReal0000</mark>'); // remove before merge
+
+Error: connect ECONNREFUSED <mark class="leak">198.51.100.7</mark>:5432
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1607:16)
+  databaseUrl: 'postgres://app:<mark class="leak">Wint3r-Fake-Pass</mark>@db.example.com:5432/app',
+  customer: { id: 4821, email: '<mark class="leak">sam.lee@example.org</mark>', plan: 'pro' }</code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>// charge.js
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const fallback = require('stripe')('<mark class="hit">STRIPE_KEY_1</mark>'); // remove before merge
+
+Error: connect ECONNREFUSED <mark class="hit">IP_1</mark>:5432
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1607:16)
+  databaseUrl: 'postgres://app:<mark class="hit">DB_PASSWORD_1</mark>@db.example.com:5432/app',
+  customer: { id: 4821, email: '<mark class="hit">EMAIL_1</mark>', plan: 'pro' }</code></pre></figure>
+</div>
+<p>The environment variable reference stays, because it holds no secret. The hardcoded test key, the database password, the IP address and the customer email are replaced. The AI can still see that there is a key, a database URL and a customer, which is all it needs to answer.</p>
+
+<h2>How to paste safely with PasteSafe</h2>
+<ol>
+<li>Paste the code or log into <a href="/">PasteSafe</a>. The scan runs in your browser and nothing is uploaded.</li>
+<li>Check the Findings list and read the cleaned text.</li>
+<li>Press Copy cleaned text and paste that into ChatGPT, Claude or another assistant.</li>
+<li>If the answer refers to placeholders, for example "set <code>STRIPE_KEY_1</code> in your environment", paste it into Put the real values back to get a version with the real values, still in your browser.</li>
+</ol>
+
+<h2>If you already pasted a key</h2>
+<p>Rotate it. Deleting the chat is fine too, but it does not make the key stop working. <a href="/guides/what-to-do-if-you-leaked-an-api-key/">What to do if you leaked an API key</a> walks through it.</p>
+
+<h2>What PasteSafe does not catch</h2>
+<ul>
+<li>Confidential business logic, product names and internal URLs. They are not secrets in a format a scanner can recognize.</li>
+<li>Names, street addresses and plain passwords written in comments or prose.</li>
+<li>Secrets split across lines or assembled from pieces in code.</li>
+</ul>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>Does ChatGPT store the code I paste?</h3>
+      <p>Yes. Conversations are stored on OpenAI's servers. How long they are kept and whether they are used to improve models depends on your plan and your data control settings, so check both, and your company's policy, before pasting work code.</p>
+      <h3>Is it safe to paste API keys into ChatGPT?</h3>
+      <p>No. Treat a key you pasted into any chat as leaked and rotate it. Mask keys before pasting: the AI does not need the real value to help with the code around it.</p>
+      <h3>Can other ChatGPT users see my code?</h3>
+      <p>Other users do not see your conversations unless you share a link. The risks are storage on the provider's servers, possible use for training depending on your settings, and anyone who gets into your account.</p>
+      <h3>Does PasteSafe work with Claude, Gemini and Copilot too?</h3>
+      <p>Yes. PasteSafe cleans text in your browser and you paste the result wherever you like, so it works the same for any assistant, ticket system or chat.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/what-to-do-if-you-leaked-an-api-key/"><b>What to do if you leaked an API key</b><span>Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.</span></a></li>
+      <li><a href="/guides/share-env-file-safely/"><b>How to share .env files securely</b><span>Share .env values through a secrets manager, commit a .env.example, and mask credentials when you only need to show the file to an AI, an issue or support.</span></a></li>
+      <li><a href="/guides/sanitize-logs-before-sharing/"><b>How to sanitize logs before you share them</b><span>Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

@@ -9,10 +9,10 @@ const files = readdirSync(root, { recursive: true, withFileTypes: true })
   .filter(d => d.isFile())
   .map(d => (d.parentPath + '/' + d.name).slice(root.length).replace(/\\/g, '/').replace(/^\/+/, ''));
 
-test('sw.js precache list matches the files in public/', () => {
+test('sw.js precache list matches the files in public/ (guides are not precached)', () => {
   const sw = readFileSync(root + 'sw.js', 'utf8');
   const list = JSON.parse(/const FILES = (\[[\s\S]*?\]);/.exec(sw)[1].replace(/'/g, '"').replace(/,\s*\]/, ']'));
-  const expected = files.filter(f => f !== '_headers' && f !== 'sw.js').map(f => '/' + f.replace(/(^|\/)index\.html$/, '$1')).sort();
+  const expected = files.filter(f => f !== '_headers' && f !== 'sw.js' && !f.startsWith('guides/')).map(f => '/' + f.replace(/(^|\/)index\.html$/, '$1')).sort();
   assert.deepEqual([...list].sort(), expected);
 });
 

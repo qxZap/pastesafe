@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to sanitize logs before sharing them | PasteSafe</title>
+<meta name="description" content="Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/sanitize-logs-before-sharing/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/sanitize-logs-before-sharing/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="How to sanitize logs before sharing them">
+<meta property="og:description" content="Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to sanitize logs before sharing them">
+<meta name="twitter:description" content="Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to sanitize logs before you share them",
+  "description": "Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/sanitize-logs-before-sharing/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/sanitize-logs-before-sharing/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "How to sanitize logs before you share them",
+      "item": "https://pastesafe.vibe-coding.fans/guides/sanitize-logs-before-sharing/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does it mean to sanitize a log?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sanitizing a log means removing or replacing the values that should not be shared, such as API keys, passwords, session tokens and personal data, while keeping enough context to debug the problem."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What should I remove from logs before posting a GitHub issue?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "API keys, tokens, passwords, connection strings, cookies, private keys, customer emails, IP addresses and card numbers. Keep error messages, stack traces, versions and timestamps, since those are what maintainers need."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can gitleaks redact secrets in a log file?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. gitleaks finds secrets and reports them. Its --redact option hides the secret values in its own output, but the log file itself stays unchanged."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is a sanitized log safe to post publicly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Only after you have read it. Scanners catch known formats, but hostnames, names and plain passwords in free text can slip through. When in doubt, share it privately with the person who needs it."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">How to sanitize logs before you share them</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>How to sanitize logs before you share them</h1>
+      <p class="g-lead">Logs get shared all the time: in GitHub issues, vendor tickets, team chats and AI assistants. A few minutes of cleanup keeps keys, session cookies and customer data out of places you do not control.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>Where shared logs end up</h2>
+<ul>
+<li><strong>Public issues and forums</strong> are indexed by search engines and read by bots that look for keys.</li>
+<li><strong>Vendor support tickets</strong> live in someone else's helpdesk, with their staff, retention and security.</li>
+<li><strong>Team chat</strong> is searchable by everyone in the channel, including people who join later, and synced to phones.</li>
+<li><strong>AI assistants</strong> store the conversation on the provider's servers.</li>
+</ul>
+<p>Deleting the message later does not undo it. A copy may already sit in an email notification, a search index or a backup, and a leaked key keeps working until you revoke it.</p>
+
+<h2>What to remove</h2>
+<ul>
+<li>Configuration printed at startup: environment variables, connection strings, API keys.</li>
+<li>HTTP debug output: <code>Authorization</code> headers, cookies, tokens in query strings.</li>
+<li>Private keys and certificates.</li>
+<li>Customer data in error messages: emails, IP addresses, card numbers, phone numbers.</li>
+<li>Internal details you may not want public: hostnames, account IDs, file paths with user names.</li>
+</ul>
+
+<h2>Example: a startup log before and after</h2>
+<p>Before highlights what PasteSafe finds. After is its exact output.</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>2026-09-15 09:41:07 INFO  starting billing-api on db-prod.acme.internal with config:
+  DATABASE_URL=postgres://billing:<mark class="leak">Wint3r-Fake-Pass</mark>@db-prod.acme.internal:5432/billing
+  STRIPE_SECRET_KEY=<mark class="leak">sk_test_51FakeKeyForDocs0nlyNotReal0000</mark>
+  AWS_ACCESS_KEY_ID=<mark class="leak">AKIA2EXAMPLE7FAKEKEY</mark>
+  SENTRY_ENVIRONMENT=production
+2026-09-15 09:41:09 DEBUG POST https://api.example.com/v1/charges
+  Authorization: Bearer <mark class="leak">FakeBearer7fK2mZpL9wR3nB8vT1yCq</mark>
+  Cookie: sessionid=9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c; theme=dark
+2026-09-15 09:41:09 ERROR 402 card_declined for <mark class="leak">ops@example.net</mark> from <mark class="leak">198.51.100.7</mark></code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>2026-09-15 09:41:07 INFO  starting billing-api on db-prod.acme.internal with config:
+  DATABASE_URL=postgres://billing:<mark class="hit">DB_PASSWORD_1</mark>@db-prod.acme.internal:5432/billing
+  STRIPE_SECRET_KEY=<mark class="hit">STRIPE_KEY_1</mark>
+  AWS_ACCESS_KEY_ID=<mark class="hit">AWS_ACCESS_KEY_1</mark>
+  SENTRY_ENVIRONMENT=production
+2026-09-15 09:41:09 DEBUG POST https://api.example.com/v1/charges
+  Authorization: Bearer <mark class="hit">BEARER_TOKEN_1</mark>
+  Cookie: sessionid=9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c; theme=dark
+2026-09-15 09:41:09 ERROR 402 card_declined for <mark class="hit">EMAIL_1</mark> from <mark class="hit">IP_1</mark></code></pre></figure>
+</div>
+<p>The keys, the database password, the Bearer token, the email and the client IP are replaced. The internal hostname and the session cookie are not: PasteSafe does not treat hostnames as secret, and a <code>sessionid</code> cookie with a hex value, sent together with other cookies, matches none of its rules. That is why the last step below is to read the result.</p>
+
+<h2>Step by step with PasteSafe</h2>
+<ol>
+<li>Cut the log down to the part that matters. <code>grep -n -B 5 -A 30 ERROR app.log</code> prints each error with 5 lines before it and 30 after. Less text means less to leak.</li>
+<li>Paste it into <a href="/">PasteSafe</a> or drop the file onto the editor.</li>
+<li>Look through the Findings list, which groups what was masked by type.</li>
+<li>Read the cleaned text and replace anything left by hand, like the hostname and cookie above.</li>
+<li>Press Copy cleaned text and paste it where it needs to go.</li>
+</ol>
+
+<h2>On the command line</h2>
+<p><a href="https://github.com/gitleaks/gitleaks">gitleaks</a>, the open source scanner whose rules PasteSafe uses, can check a log for known secret formats. It reports what it finds and does not change the file:</p>
+<pre class="code" tabindex="0"><code>gitleaks dir -v app.log
+cat app.log | gitleaks -v stdin</code></pre>
+<p>To replace values in a file, sed handles simple <code>key=value</code> cases:</p>
+<pre class="code" tabindex="0"><code>sed -E 's/((password|secret|token|api_key)=)[^&amp;[:space:]]+/\1REDACTED/g' app.log &gt; app.clean.log</code></pre>
+<p>A pattern list like this only catches the names you wrote down. Run gitleaks on the cleaned file afterwards to see what is left, and read it anyway.</p>
+
+<h2>What PasteSafe does not catch</h2>
+<ul>
+<li>Internal hostnames, account IDs and file paths.</li>
+<li>Session cookies in a <code>Cookie</code> header with several cookies, when the name ends in id, like <code>sessionid</code> or <code>session_id</code>, or the value is plain hex.</li>
+<li>Passwords typed as plain words in a message, and names or street addresses.</li>
+</ul>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>What does it mean to sanitize a log?</h3>
+      <p>Sanitizing a log means removing or replacing the values that should not be shared, such as API keys, passwords, session tokens and personal data, while keeping enough context to debug the problem.</p>
+      <h3>What should I remove from logs before posting a GitHub issue?</h3>
+      <p>API keys, tokens, passwords, connection strings, cookies, private keys, customer emails, IP addresses and card numbers. Keep error messages, stack traces, versions and timestamps, since those are what maintainers need.</p>
+      <h3>Can gitleaks redact secrets in a log file?</h3>
+      <p>No. gitleaks finds secrets and reports them. Its --redact option hides the secret values in its own output, but the log file itself stays unchanged.</p>
+      <h3>Is a sanitized log safe to post publicly?</h3>
+      <p>Only after you have read it. Scanners catch known formats, but hostnames, names and plain passwords in free text can slip through. When in doubt, share it privately with the person who needs it.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/mask-pii-in-logs/"><b>How to mask PII in logs</b><span>Emails, IP addresses, card numbers and phone numbers pile up in logs. See what counts as PII, how to mask it in a log you have, and how to stop logging it.</span></a></li>
+      <li><a href="/guides/sanitize-har-file/"><b>How to sanitize a HAR file</b><span>HAR files hold session cookies, tokens and passwords. See what Chrome's sanitized export removes, clean up with jq, and mask what is left in your browser.</span></a></li>
+      <li><a href="/guides/is-it-safe-to-paste-code-into-chatgpt/"><b>Is it safe to paste code and logs into ChatGPT?</b><span>What happens to code and logs you paste into ChatGPT, what to take out first, and how to mask keys and customer data in your browser before you hit send.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to remove a secret from git history | PasteSafe</title>
+<meta name="description" content="Rotate the secret, find every commit that contains it, rewrite history with git filter-repo or BFG, and clean up forks, clones and pull request refs.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/remove-secrets-from-git-history/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/remove-secrets-from-git-history/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="How to remove a secret from git history">
+<meta property="og:description" content="Rotate the secret, find every commit that contains it, rewrite history with git filter-repo or BFG, and clean up forks, clones and pull request refs.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to remove a secret from git history">
+<meta name="twitter:description" content="Rotate the secret, find every commit that contains it, rewrite history with git filter-repo or BFG, and clean up forks, clones and pull request refs.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to remove a secret from git history",
+  "description": "Rotate the secret, find every commit that contains it, rewrite history with git filter-repo or BFG, and clean up forks, clones and pull request refs.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/remove-secrets-from-git-history/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/remove-secrets-from-git-history/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "How to remove a secret from git history",
+      "item": "https://pastesafe.vibe-coding.fans/guides/remove-secrets-from-git-history/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does deleting the file in a new commit remove the secret?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The file is gone from the latest commit, but every earlier commit still contains it, and anyone with access can check out or browse those commits. Rotate the secret and rewrite the history."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I use git filter-repo or BFG?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Either works. GitHub's documentation uses git filter-repo, which can also remove files by path and prints cleanup steps with --sensitive-data-removal. BFG replaces text on a mirror clone and leaves your latest commit alone by default."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I still need to rotate the key after rewriting history?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Rewriting history does not reach existing clones, forks or anything a scanner already copied. Rotation is what makes the leaked value useless."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does a force push remove the secret from GitHub?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not completely. Old commits can stay reachable through forks, pull request references and cached views. GitHub's guide on removing sensitive data explains when to contact GitHub Support."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">How to remove a secret from git history</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>How to remove a secret from git history</h1>
+      <p class="g-lead">First rotate the secret, because rewriting history does not stop it from working. Then find every commit that contains it, rewrite the history with git filter-repo or BFG, and clean up the copies a force push does not reach.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>Rotate first</h2>
+<p>Once a secret has been pushed, assume someone has a copy. Clones, forks, CI caches and pull request references can all hold the old commits, and public repositories are watched by automated scanners. GitHub's own guide says the first step is to revoke or rotate the secret. After that, removing it from history is cleanup, not the fix. <a href="/guides/what-to-do-if-you-leaked-an-api-key/">What to do if you leaked an API key</a> covers rotation for common providers.</p>
+
+<h2>Find every commit that contains it</h2>
+<p><a href="https://github.com/gitleaks/gitleaks">gitleaks</a> scans the whole history of a repository:</p>
+<pre class="code" tabindex="0"><code>gitleaks git -v .</code></pre>
+<p>If you know the value, or the start of it, git lists every commit that added or removed it:</p>
+<pre class="code" tabindex="0"><code>git log --all -p -S 'sk_test_51FakeKey'</code></pre>
+<p>To see what else a suspicious commit exposes, paste the output of <code>git show</code> into <a href="/">PasteSafe</a>. The Findings list shows each masked value next to its placeholder, which helps you build the list of strings to remove. Before highlights what PasteSafe finds, After is its exact output:</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code>commit 3f1c9a7e2b8d4f60c5e9b2d7a1f4c8e93b6d2a10
+Author: Sam Lee &lt;<mark class="leak">sam.lee@example.org</mark>&gt;
+Date:   Tue Sep 15 09:41:07 2026 +0000
+
+    add local config
+
+diff --git a/.env b/.env
+new file mode 100644
+--- /dev/null
++++ b/.env
+@@ -0,0 +1,4 @@
++DATABASE_URL=postgres://app:<mark class="leak">Wint3r-Fake-Pass</mark>@localhost:5432/app
++STRIPE_SECRET_KEY=<mark class="leak">sk_test_51FakeKeyForDocs0nlyNotReal0000</mark>
++JWT_SIGNING_SECRET=<mark class="leak">fake-signing-secret-9f8a7b6c</mark>
++LOG_LEVEL=debug</code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code>commit 3f1c9a7e2b8d4f60c5e9b2d7a1f4c8e93b6d2a10
+Author: Sam Lee &lt;<mark class="hit">EMAIL_1</mark>&gt;
+Date:   Tue Sep 15 09:41:07 2026 +0000
+
+    add local config
+
+diff --git a/.env b/.env
+new file mode 100644
+--- /dev/null
++++ b/.env
+@@ -0,0 +1,4 @@
++DATABASE_URL=postgres://app:<mark class="hit">DB_PASSWORD_1</mark>@localhost:5432/app
++STRIPE_SECRET_KEY=<mark class="hit">STRIPE_KEY_1</mark>
++JWT_SIGNING_SECRET=<mark class="hit">SECRET_1</mark>
++LOG_LEVEL=debug</code></pre></figure>
+</div>
+<p>The commit hash is left alone. The author email is masked too: it is personal data, but not something you need to remove from history.</p>
+
+<h2>Rewrite history with git filter-repo</h2>
+<p><a href="https://github.com/newren/git-filter-repo">git filter-repo</a> is the tool GitHub's documentation uses. Work in a fresh clone. Put the values to remove in a text file outside the repository, one per line:</p>
+<pre class="code" tabindex="0"><code>sk_test_51FakeKeyForDocs0nlyNotReal0000
+Wint3r-Fake-Pass==&gt;REMOVED_DB_PASSWORD
+regex:JWT_SIGNING_SECRET=.*==&gt;JWT_SIGNING_SECRET=REMOVED</code></pre>
+<p>Each line is literal text unless it starts with <code>regex:</code> or <code>glob:</code>. Matches are replaced with <code>***REMOVED***</code>, or with the text after <code>==&gt;</code>. Then run:</p>
+<pre class="code" tabindex="0"><code>git filter-repo --sensitive-data-removal --replace-text ../passwords.txt</code></pre>
+<p>To drop a whole file from every commit instead, for example a committed <code>.env</code>:</p>
+<pre class="code" tabindex="0"><code>git filter-repo --sensitive-data-removal --invert-paths --path .env</code></pre>
+<p><code>--sensitive-data-removal</code> needs git filter-repo 2.47 or later. It fetches all refs first and prints the follow up steps for the remote and other clones.</p>
+
+<h2>Or use BFG Repo-Cleaner</h2>
+<p><a href="https://rtyley.github.io/bfg-repo-cleaner/">BFG</a> is an older alternative that many guides still use. It works on a mirror clone and by default does not change your latest commit, so remove the secret from the current files and commit that first:</p>
+<pre class="code" tabindex="0"><code>git clone --mirror https://github.com/acme/billing.git
+bfg --replace-text passwords.txt billing.git
+cd billing.git
+git reflog expire --expire=now --all &amp;&amp; git gc --prune=now --aggressive</code></pre>
+
+<h2>Push and clean up the copies</h2>
+<ol>
+<li>Force push the rewritten branches and tags, following the instructions filter-repo prints.</li>
+<li>Ask everyone with a clone to delete it and clone again. One push from an old clone brings the secret back.</li>
+<li>On GitHub, old commits can stay reachable through forks, pull request references and cached views. GitHub's guide to <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository">removing sensitive data from a repository</a> explains when to contact GitHub Support.</li>
+<li>Delete CI caches and build artifacts made from the old commits.</li>
+</ol>
+
+<h2>Keep it from happening again</h2>
+<ul>
+<li>Add <code>.env</code> and other local config files to <code>.gitignore</code>, and commit a <code>.env.example</code> with names only.</li>
+<li>Run gitleaks as a pre-commit hook. Add this to <code>.pre-commit-config.yaml</code>, using the latest release tag for <code>rev</code>:</li>
+</ul>
+<pre class="code" tabindex="0"><code>repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.2
+    hooks:
+      - id: gitleaks</code></pre>
+<ul>
+<li>Turn on push protection for the repository if your git host offers it.</li>
+</ul>
+
+<h2>What PasteSafe does not do</h2>
+<p>PasteSafe never touches your repository. It masks a copy of the text you paste, which helps when reviewing or sharing a diff, but the history still has to be rewritten with git filter-repo or BFG using the real values.</p>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>Does deleting the file in a new commit remove the secret?</h3>
+      <p>No. The file is gone from the latest commit, but every earlier commit still contains it, and anyone with access can check out or browse those commits. Rotate the secret and rewrite the history.</p>
+      <h3>Should I use git filter-repo or BFG?</h3>
+      <p>Either works. GitHub's documentation uses git filter-repo, which can also remove files by path and prints cleanup steps with --sensitive-data-removal. BFG replaces text on a mirror clone and leaves your latest commit alone by default.</p>
+      <h3>Do I still need to rotate the key after rewriting history?</h3>
+      <p>Yes. Rewriting history does not reach existing clones, forks or anything a scanner already copied. Rotation is what makes the leaked value useless.</p>
+      <h3>Does a force push remove the secret from GitHub?</h3>
+      <p>Not completely. Old commits can stay reachable through forks, pull request references and cached views. GitHub's guide on removing sensitive data explains when to contact GitHub Support.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/what-to-do-if-you-leaked-an-api-key/"><b>What to do if you leaked an API key</b><span>Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.</span></a></li>
+      <li><a href="/guides/share-env-file-safely/"><b>How to share .env files securely</b><span>Share .env values through a secrets manager, commit a .env.example, and mask credentials when you only need to show the file to an AI, an issue or support.</span></a></li>
+      <li><a href="/guides/sanitize-logs-before-sharing/"><b>How to sanitize logs before you share them</b><span>Before a log goes into a GitHub issue, ticket, chat or AI assistant, remove API keys, cookies and customer data. A checklist, an example and CLI options.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>

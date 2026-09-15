@@ -21,5 +21,14 @@ test('page gets the strict CSP, sw.js gets its own, _headers is not served', asy
   assert.match(sw, /connect-src 'self'/);
   assert.doesNotMatch(sw, /connect-src 'none'/, 'page CSP must not stack onto sw.js');
 
+  for (const path of ['/guides/', '/guides/sanitize-har-file/']) {
+    const res = await fetch(base + path);
+    assert.equal(res.status, 200, path);
+    const csp = res.headers.get('content-security-policy');
+    assert.match(csp, /default-src 'none'/, path);
+    assert.equal(csp.match(/default-src/g).length, 1, `${path}: exactly one policy, nothing stacked`);
+    assert.equal(res.headers.get('x-content-type-options'), 'nosniff', path);
+  }
+
   assert.equal((await fetch(base + '/_headers')).status, 404);
 });

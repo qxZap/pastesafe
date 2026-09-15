@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to share .env files securely with your team | PasteSafe</title>
+<meta name="description" content="Share .env values through a secrets manager, commit a .env.example, and mask credentials when you only need to show the file to an AI, an issue or support.">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/guides/guides.css">
+<link rel="canonical" href="https://pastesafe.vibe-coding.fans/guides/share-env-file-safely/">
+<meta property="og:url" content="https://pastesafe.vibe-coding.fans/guides/share-env-file-safely/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="PasteSafe">
+<meta property="og:title" content="How to share .env files securely with your team">
+<meta property="og:description" content="Share .env values through a secrets manager, commit a .env.example, and mask credentials when you only need to show the file to an AI, an issue or support.">
+<meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to share .env files securely with your team">
+<meta name="twitter:description" content="Share .env values through a secrets manager, commit a .env.example, and mask credentials when you only need to show the file to an AI, an issue or support.">
+<meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to share .env files securely",
+  "description": "Share .env values through a secrets manager, commit a .env.example, and mask credentials when you only need to show the file to an AI, an issue or support.",
+  "url": "https://pastesafe.vibe-coding.fans/guides/share-env-file-safely/",
+  "mainEntityOfPage": "https://pastesafe.vibe-coding.fans/guides/share-env-file-safely/",
+  "image": "https://pastesafe.vibe-coding.fans/og.png",
+  "inLanguage": "en",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "author": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "vibe-coding.fans",
+    "url": "https://vibe-coding.fans/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteSafe",
+    "url": "https://pastesafe.vibe-coding.fans/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "PasteSafe",
+      "item": "https://pastesafe.vibe-coding.fans/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pastesafe.vibe-coding.fans/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "How to share .env files securely",
+      "item": "https://pastesafe.vibe-coding.fans/guides/share-env-file-safely/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Should I commit my .env file to git?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Add .env to .gitignore and commit a .env.example with the variable names and empty or dummy values. If a .env was already committed, rotate the keys in it and remove it from the history."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the safest way to share environment variables with a team?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A secrets manager or a shared vault in a team password manager, with access per person. You can see who has access and revoke it, which you cannot do with a file sent in chat."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to send a .env file over Slack?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The file stays in the channel history, search and exports for as long as the workspace keeps messages, and anyone who can read it can use the keys. Use a secrets manager, or at least encrypt the file for one person."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I paste my .env into ChatGPT to debug it?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mask it first. With placeholders the AI still sees every variable name and the harmless values like ports and modes, which is usually what the problem is about, but none of the credentials."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="page g-page">
+  <header class="top">
+    <a class="brand" href="/"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect class="logo-bg" width="32" height="32" rx="8"/><rect class="logo-line" x="7" y="8" width="18" height="3" rx="1.5"/><rect class="logo-line" x="7" y="14.5" width="7" height="3" rx="1.5"/><rect class="logo-ph" x="16" y="13.5" width="9" height="5" rx="1.5"/><rect class="logo-line" x="7" y="21" width="12" height="3" rx="1.5"/></svg>PasteSafe</a>
+    <nav class="nav" aria-label="Site">
+      <a href="/guides/">Guides</a>
+      <a href="/">Open the tool</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">PasteSafe</a></li>
+      <li><a href="/guides/">Guides</a></li>
+      <li aria-current="page">How to share .env files securely</li>
+    </ol>
+  </nav>
+  <main id="main">
+    <div class="g-head">
+      <h1>How to share .env files securely</h1>
+      <p class="g-lead">Sharing a <code>.env</code> file can mean two things: giving a teammate the values so the app runs, or showing the file to an AI assistant, an issue or a support ticket to debug it. They need different tools.</p>
+      <p class="g-cta"><a class="btn btn-primary btn-lg" href="/">Mask your log in PasteSafe</a></p>
+    </div>
+    <article class="g-body">
+
+<h2>Do not paste the file into chat or email</h2>
+<p>A <code>.env</code> file is a list of working credentials. Sent in Slack, Teams or email, it becomes searchable by everyone with access to that conversation, synced to their phones, kept in backups and exports, and it stays valid until every key in it is rotated. If that already happened, rotate the keys: <a href="/guides/what-to-do-if-you-leaked-an-api-key/">what to do if you leaked an API key</a> covers how.</p>
+
+<h2>Sharing the values with a teammate</h2>
+<ul>
+<li><strong>Use a secrets manager or a shared password manager vault.</strong> Cloud providers have one (AWS Secrets Manager, Google Cloud Secret Manager, Azure Key Vault), and team password managers have shared vaults. Access is granted per person and can be revoked when someone leaves.</li>
+<li><strong>Give each developer their own development keys</strong> where the provider allows it, such as Stripe test mode keys, instead of passing one production key around.</li>
+<li><strong>Commit a template with names only</strong>, and keep <code>.env</code> in <code>.gitignore</code>. This command writes a <code>.env.example</code> with the values removed. It also cuts comments that contain an equals sign, so skim the result:</li>
+</ul>
+<pre class="code" tabindex="0"><code>sed -E 's/=.*/=/' .env &gt; .env.example</code></pre>
+<ul>
+<li><strong>If a file really has to travel, encrypt it</strong> for the one person who needs it, for example with <a href="https://github.com/FiloSottile/age">age</a> and their public key. They decrypt it with their private key:</li>
+</ul>
+<pre class="code" tabindex="0"><code>age -r &lt;recipient-public-key&gt; -o .env.age .env
+age -d -i key.txt -o .env .env.age</code></pre>
+
+<h2>Sharing the shape to debug it</h2>
+<p>To ask an AI assistant why the app cannot connect, or to attach the config to an issue, you need the variable names and the harmless values, not the credentials. That is what masking is for. Before highlights what PasteSafe finds, After is its exact output:</p>
+<div class="ba">
+<figure><figcaption>Before</figcaption><pre class="code" tabindex="0"><code># billing-api, local development
+NODE_ENV=development
+PORT=3000
+ADMIN_USER=admin
+S3_BUCKET=acme-billing-exports
+DATABASE_URL=postgres://billing:<mark class="leak">Wint3r-Fake-Pass</mark>@localhost:5432/billing
+REDIS_URL=redis://:FakeRedisPass42@cache.internal:6379
+STRIPE_SECRET_KEY=<mark class="leak">sk_test_51FakeKeyForDocs0nlyNotReal0000</mark>
+JWT_SECRET=<mark class="leak">fake-jwt-signing-secret-9f8a7b</mark>
+SMTP_PASSWORD=<mark class="leak">Fake-Smtp-Pass-1</mark>
+ALERT_EMAIL=<mark class="leak">ops@example.net</mark></code></pre></figure>
+<figure><figcaption>After PasteSafe</figcaption><pre class="code" tabindex="0"><code># billing-api, local development
+NODE_ENV=development
+PORT=3000
+ADMIN_USER=admin
+S3_BUCKET=acme-billing-exports
+DATABASE_URL=postgres://billing:<mark class="hit">DB_PASSWORD_1</mark>@localhost:5432/billing
+REDIS_URL=redis://:FakeRedisPass42@cache.internal:6379
+STRIPE_SECRET_KEY=<mark class="hit">STRIPE_KEY_1</mark>
+JWT_SECRET=<mark class="hit">SECRET_1</mark>
+SMTP_PASSWORD=<mark class="hit">PASSWORD_1</mark>
+ALERT_EMAIL=<mark class="hit">EMAIL_1</mark></code></pre></figure>
+</div>
+<p>The database password, the Stripe key, the JWT secret, the SMTP password and the email are replaced. <code>NODE_ENV</code>, <code>PORT</code> and the bucket name stay, which is often exactly what the AI needs to see. The Redis URL keeps its password, because there is no user name before the colon. Replace that one by hand.</p>
+<ol>
+<li>Paste the <code>.env</code> into <a href="/">PasteSafe</a>. It runs in your browser.</li>
+<li>Values under names like <code>PASSWORD</code>, <code>SECRET</code>, <code>TOKEN</code>, <code>API_KEY</code> or <code>PRIVATE_KEY</code>, passwords in connection URLs with a user name, and known key formats become placeholders.</li>
+<li>Read the result, fix anything left, and copy it.</li>
+<li>If the AI answers with placeholders, paste the reply into Put the real values back to see it with your values, still in your browser.</li>
+</ol>
+
+<h2>What PasteSafe does not catch in a .env file</h2>
+<ul>
+<li>Passwords in URLs without a user name, like <code>redis://:password@host</code>.</li>
+<li>Short or simple values under neutral names, such as <code>ADMIN_USER=admin</code>.</li>
+<li>Hostnames, bucket names and account IDs, which may be internal but are not secrets.</li>
+</ul>
+
+    <section class="g-faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <h3>Should I commit my .env file to git?</h3>
+      <p>No. Add .env to .gitignore and commit a .env.example with the variable names and empty or dummy values. If a .env was already committed, rotate the keys in it and remove it from the history.</p>
+      <h3>What is the safest way to share environment variables with a team?</h3>
+      <p>A secrets manager or a shared vault in a team password manager, with access per person. You can see who has access and revoke it, which you cannot do with a file sent in chat.</p>
+      <h3>Is it safe to send a .env file over Slack?</h3>
+      <p>No. The file stays in the channel history, search and exports for as long as the workspace keeps messages, and anyone who can read it can use the keys. Use a secrets manager, or at least encrypt the file for one person.</p>
+      <h3>Can I paste my .env into ChatGPT to debug it?</h3>
+      <p>Mask it first. With placeholders the AI still sees every variable name and the harmless values like ports and modes, which is usually what the problem is about, but none of the credentials.</p>
+    </section>
+    </article>
+    <section class="g-related" aria-labelledby="related-title">
+      <h2 id="related-title">Related guides</h2>
+      <ul class="g-list">
+      <li><a href="/guides/what-to-do-if-you-leaked-an-api-key/"><b>What to do if you leaked an API key</b><span>Revoke or rotate the key first. Then check whether it was used, remove it from git, chat or logs, and stop the next leak. Steps for AWS, Stripe and GitHub.</span></a></li>
+      <li><a href="/guides/remove-secrets-from-git-history/"><b>How to remove a secret from git history</b><span>Rotate the secret, find every commit that contains it, rewrite history with git filter-repo or BFG, and clean up forks, clones and pull request refs.</span></a></li>
+      <li><a href="/guides/is-it-safe-to-paste-code-into-chatgpt/"><b>Is it safe to paste code and logs into ChatGPT?</b><span>What happens to code and logs you paste into ChatGPT, what to take out first, and how to mask keys and customer data in your browser before you hit send.</span></a></li>
+      </ul>
+    </section>
+    <section class="team" aria-labelledby="try-title">
+      <div>
+        <h2 id="try-title">Clean it before you paste it</h2>
+        <p>PasteSafe masks API keys, passwords and personal data in your browser. Nothing is uploaded.</p>
+      </div>
+      <a class="btn btn-primary" href="/">Mask your log in PasteSafe</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>
