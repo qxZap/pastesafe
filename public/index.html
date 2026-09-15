@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PasteSafe: clean logs before you paste them into AI</title>
-<meta name="description" content="Mask API keys, passwords and customer data in logs and configs before they go into ChatGPT, GitHub or Slack. Runs entirely in your browser. Nothing is uploaded.">
+<title>Mask API keys and PII in logs before ChatGPT | PasteSafe</title>
+<meta name="description" content="Mask API keys, passwords and PII in logs before you paste them into ChatGPT or other AI. It runs in your browser and uploads nothing. Try a sample log.">
 <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -20,15 +20,15 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="PasteSafe">
-<meta property="og:title" content="PasteSafe: clean it before you paste it">
-<meta property="og:description" content="Mask API keys, passwords and customer data in logs before they go into AI. Runs entirely in your browser. 0 bytes uploaded.">
+<meta property="og:title" content="PasteSafe: mask API keys and PII in logs before AI">
+<meta property="og:description" content="Redact API keys, passwords and customer data from logs and stack traces before they go into ChatGPT or other AI. Runs in your browser. 0 bytes uploaded.">
 <meta property="og:image" content="https://pastesafe.vibe-coding.fans/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="PasteSafe: clean it before you paste it. A log line with its API key replaced by a placeholder.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="PasteSafe: clean it before you paste it">
-<meta name="twitter:description" content="Mask API keys, passwords and customer data in logs before they go into AI. Runs entirely in your browser.">
+<meta name="twitter:title" content="PasteSafe: mask API keys and PII in logs before AI">
+<meta name="twitter:description" content="Redact API keys and customer data from logs before they go into ChatGPT. Runs in your browser. 0 bytes uploaded.">
 <meta name="twitter:image" content="https://pastesafe.vibe-coding.fans/og.png">
 <script type="application/ld+json">
 {
@@ -36,14 +36,46 @@
   "@type": "WebApplication",
   "name": "PasteSafe",
   "url": "https://pastesafe.vibe-coding.fans/",
-  "description": "Mask API keys, passwords and customer data in logs and configs before they go into ChatGPT, GitHub or Slack. Runs entirely in your browser.",
+  "description": "Mask API keys, passwords and personal data (PII) in logs, stack traces and configs before they go into ChatGPT or other AI. Runs entirely in your browser.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Any (web browser)",
   "browserRequirements": "Requires JavaScript",
   "isAccessibleForFree": true,
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Masks API keys and tokens with more than 200 gitleaks rules",
+    "Masks private keys, JWTs, Bearer headers and passwords in URLs, connection strings and .env files",
+    "Masks emails, IP addresses, card numbers, IBANs and phone numbers",
+    "Stable placeholders such as EMAIL_1 that turn back into the real values in the AI's reply",
+    "Runs entirely in the browser, nothing is uploaded",
+    "Works offline after the first visit"
+  ],
   "image": "https://pastesafe.vibe-coding.fans/og.png",
   "isPartOf": { "@type": "WebSite", "name": "vibe-coding.fans", "url": "https://vibe-coding.fans/" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is it safe to paste logs into ChatGPT?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Only after you remove the secrets and personal data. Logs often hold API keys, session tokens, emails and IP addresses, and once you send a message it is stored on the AI provider's servers, out of your control. Paste the log here first and send the cleaned copy instead." } },
+    { "@type": "Question", "name": "What are the data privacy concerns with ChatGPT?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The main concern is that everything you paste is kept on someone else's servers. Depending on your plan and settings, chats may be stored, reviewed or used to improve models, and a leaked API key keeps working until you rotate it. Masking before you paste keeps keys and customer data out of the chat." } },
+    { "@type": "Question", "name": "What is PII masking?",
+      "acceptedAnswer": { "@type": "Answer", "text": "PII masking replaces personally identifiable information, such as emails, phone numbers and card numbers, with placeholders, so text can be shared without exposing the people in it. PasteSafe gives each unique value its own placeholder, like EMAIL_1, so the AI can still tell values apart. It does not mask names." } },
+    { "@type": "Question", "name": "How do I mask PII data in logs?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Paste the log into the editor and copy the cleaned text: emails, IP addresses, card numbers, IBANs and phone numbers are replaced automatically. For logs your apps write every day, also mask PII in your logging code, so it never reaches the log files in the first place." } },
+    { "@type": "Question", "name": "How do I remove API keys and secrets from logs or a stack trace?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Paste the log or stack trace here and copy the cleaned version, where known key formats become placeholders like STRIPE_KEY_1. The redacted API key never leaves your browser. If the key was already shared or committed to GitHub, rotate it as well: removing it from a log or from git history does not revoke it." } },
+    { "@type": "Question", "name": "Can I sanitize a whole log file?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drop a text file onto the editor and it is read and cleaned on your device in one pass, even a 5 MB log. Above 300 KB or 5,000 lines the highlights and animation switch off, but every line is still masked." } },
+    { "@type": "Question", "name": "Is my text uploaded anywhere?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. The scan runs in a background thread inside this tab, the page's Content Security Policy forbids it from opening network connections, and nothing is saved to cookies or local storage. The Check it yourself panel counts network requests live, so you can verify it." } },
+    { "@type": "Question", "name": "Can I get the real values back after the AI answers?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Paste the AI's reply into Put the real values back and every placeholder turns back into its original value, in this tab only. Close the tab and the mapping is gone." } }
+  ]
 }
 </script>
 <script type="module" src="js/app.js"></script>
@@ -87,7 +119,7 @@
   <main>
     <div class="hero">
       <h1>Clean it before you paste it.</h1>
-      <p class="sub">Mask API keys, passwords and customer data in logs and configs before they go into ChatGPT, GitHub or Slack. Runs entirely in your browser.</p>
+      <p class="sub">Mask API keys, passwords and personal data (PII) in logs, stack traces and configs before they go into ChatGPT, GitHub or Slack. Runs entirely in your browser.</p>
     </div>
 
     <section class="workbench" aria-labelledby="tool-title">
@@ -189,6 +221,19 @@
       </aside>
     </section>
 
+    <section class="section prose" id="how-to" aria-labelledby="how-to-title">
+      <h2 id="how-to-title">How to mask API keys and PII in logs</h2>
+      <p>Paste the log above, copy the cleaned text, and give that to the AI. It takes a few seconds, and the log never leaves your browser.</p>
+      <ol class="steps">
+        <li><a href="#input">Paste a log, stack trace, config or .env file into the editor</a>, or drop the file onto the page.</li>
+        <li>Each secret and piece of personal data is replaced with a placeholder, such as <code>AWS_ACCESS_KEY_1</code> or <code>EMAIL_2</code>.</li>
+        <li>Check the Findings list. Untick a type under Mask these to keep it, for example IP addresses.</li>
+        <li>Read the cleaned text. Plain passwords and names in free text can slip through.</li>
+        <li>Press Copy cleaned text and paste the result into ChatGPT, Claude or Copilot.</li>
+        <li>Paste the AI's answer into <a href="#restore">Put the real values back</a> to swap the placeholders for the real values.</li>
+      </ol>
+    </section>
+
     <section class="section" id="restore" aria-labelledby="restore-title">
       <div class="section-head">
         <h2 id="restore-title">Put the real values back</h2>
@@ -275,9 +320,34 @@
       </ul>
     </section>
 
+    <section class="section" id="detect" aria-labelledby="detect-title">
+      <div class="section-head">
+        <h2 id="detect-title">What does PasteSafe detect?</h2>
+        <p class="lead">Secrets and personal data: API keys and tokens, private keys, passwords, emails, IP addresses, card numbers, IBANs and phone numbers. Each type has its own toggle, so you choose what gets masked.</p>
+      </div>
+      <div class="checks">
+        <article class="check">
+          <h3>API keys and tokens</h3>
+          <p>More than 200 key formats from the <a href="https://github.com/gitleaks/gitleaks">gitleaks</a> rules, from AWS, GitHub and Stripe to Slack, OpenAI and Anthropic. Also JWTs, Bearer and Basic auth headers, and long random values in configs.</p>
+        </article>
+        <article class="check">
+          <h3>Private keys</h3>
+          <p>Private key blocks such as RSA, EC, OpenSSH and PGP keys. The whole block becomes one placeholder, like <code>PRIVATE_KEY_1</code>.</p>
+        </article>
+        <article class="check">
+          <h3>Passwords and secrets</h3>
+          <p>Passwords in URLs and database connection strings, and <code>.env</code>, YAML and JSON values whose key is named like password, secret or token.</p>
+        </article>
+        <article class="check">
+          <h3>Personal data (PII)</h3>
+          <p>Email addresses, IPv4 and IPv6 addresses, card numbers that pass the Luhn check, IBANs with a valid checksum, and phone numbers in international or US formats.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="section prose" id="about" aria-labelledby="about-title">
       <h2 id="about-title">How it works</h2>
-      <p>Your text goes to a Web Worker, a background thread inside this tab, so even a 5 MB log does not freeze the page. It runs the <a href="https://github.com/gitleaks/gitleaks">gitleaks</a> secret rules (more than 200 formats, from AWS and GitHub to Stripe and Slack), plus checks for private key blocks, JWTs, Bearer headers, passwords in URLs and connection strings, <code>.env</code> lines, emails, IP addresses, card numbers (Luhn check), IBANs (checksum) and phone numbers.</p>
+      <p>Your text goes to a Web Worker, a background thread inside this tab, so even a 5 MB log does not freeze the page. It runs the <a href="https://github.com/gitleaks/gitleaks">gitleaks</a> secret rules and the other checks listed under <a href="#detect">What does PasteSafe detect?</a></p>
       <p>The worker has no network code at all.</p>
       <p>Each unique value gets a stable placeholder such as <code>AWS_ACCESS_KEY_1</code> or <code>EMAIL_2</code>, so the AI's answer still makes sense. The table that maps placeholders back to real values lives only in this tab's memory. Nothing is saved: no cookies, no local storage, no accounts. Close the tab and it is gone.</p>
       <h3>The service worker</h3>
@@ -285,6 +355,26 @@
             <h3>Limits</h3>
       <p>Known key formats are caught reliably. Plain passwords, names and street addresses in free text can slip through. Read the cleaned text before you paste it.</p>
       <p>There is no analytics script. Visitor numbers come from the hosting dashboard, which needs nothing on the page. The ads are plain links to our own apps, with their logos served from this site.</p>
+    </section>
+
+    <section class="section prose" id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions about pasting logs into AI</h2>
+      <h3>Is it safe to paste logs into ChatGPT?</h3>
+      <p>Only after you remove the secrets and personal data. Logs often hold API keys, session tokens, emails and IP addresses, and once you send a message it is stored on the AI provider's servers, out of your control. Paste the log here first and send the cleaned copy instead.</p>
+      <h3>What are the data privacy concerns with ChatGPT?</h3>
+      <p>The main concern is that everything you paste is kept on someone else's servers. Depending on your plan and settings, chats may be stored, reviewed or used to improve models, and a leaked API key keeps working until you rotate it. Masking before you paste keeps keys and customer data out of the chat.</p>
+      <h3>What is PII masking?</h3>
+      <p>PII masking replaces personally identifiable information, such as emails, phone numbers and card numbers, with placeholders, so text can be shared without exposing the people in it. PasteSafe gives each unique value its own placeholder, like <code>EMAIL_1</code>, so the AI can still tell values apart. It does not mask names.</p>
+      <h3>How do I mask PII data in logs?</h3>
+      <p>Paste the log into the editor and copy the cleaned text: emails, IP addresses, card numbers, IBANs and phone numbers are replaced automatically. For logs your apps write every day, also mask PII in your logging code, so it never reaches the log files in the first place.</p>
+      <h3>How do I remove API keys and secrets from logs or a stack trace?</h3>
+      <p>Paste the log or stack trace here and copy the cleaned version, where known key formats become placeholders like <code>STRIPE_KEY_1</code>. The redacted API key never leaves your browser. If the key was already shared or committed to GitHub, rotate it as well: removing it from a log or from git history does not revoke it.</p>
+      <h3>Can I sanitize a whole log file?</h3>
+      <p>Yes. Drop a text file onto the editor and it is read and cleaned on your device in one pass, even a 5 MB log. Above 300 KB or 5,000 lines the highlights and animation switch off, but every line is still masked.</p>
+      <h3>Is my text uploaded anywhere?</h3>
+      <p>No. The scan runs in a background thread inside this tab, the page's Content Security Policy forbids it from opening network connections, and nothing is saved to cookies or local storage. The <a href="#check">Check it yourself</a> panel counts network requests live, so you can verify it.</p>
+      <h3>Can I get the real values back after the AI answers?</h3>
+      <p>Yes. Paste the AI's reply into <a href="#restore">Put the real values back</a> and every placeholder turns back into its original value, in this tab only. Close the tab and the mapping is gone.</p>
     </section>
 
     <section class="team" aria-labelledby="team-title">
@@ -298,6 +388,12 @@
 
   <footer class="foot">
     <p>A <a href="https://vibe-coding.fans/">vibe-coding.fans</a> project. <a href="https://github.com/qxZap/pastesafe">Source on GitHub</a>, MIT License. Secret rules from <a href="https://github.com/gitleaks/gitleaks">gitleaks</a> by Zachary Rice, MIT License. Fonts: JetBrains Mono and IBM Plex Sans, SIL Open Font License.</p>
+    <p class="foot-more">More free tools from vibe-coding.fans:</p>
+    <ul class="foot-links">
+      <li><a href="https://overlap.vibe-coding.fans/">Overlap, a time zone overlap planner for teams</a></li>
+      <li><a href="https://bridge-days.vibe-coding.fans/">BridgeDays, a planner that turns annual leave into long breaks</a></li>
+      <li><a href="https://vibe-coding.fans/">vibe-coding.fans</a></li>
+    </ul>
   </footer>
 </div>
 

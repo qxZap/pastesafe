@@ -418,6 +418,9 @@ legend { margin-bottom: var(--s-2); padding: 0; color: var(--muted); font-size: 
 .prose h2 { margin-bottom: var(--s-4); }
 .prose h3 { margin: var(--s-5) 0 var(--s-2); font-size: var(--fs-18); }
 .prose p + p { margin-top: var(--s-3); }
+.steps { max-width: 44rem; margin: var(--s-4) 0 0; padding-left: 1.5em; }
+.steps li + li { margin-top: var(--s-2); }
+.steps li::marker { color: var(--accent); font-weight: 600; }
 
 .pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-4); }
 @container page (min-width: 48rem) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
@@ -463,6 +466,9 @@ legend { margin-bottom: var(--s-2); padding: 0; color: var(--muted); font-size: 
 @container page (min-width: 48rem) { .team { grid-template-columns: minmax(0, 1fr) auto; padding: var(--s-6); } }
 
 .foot { margin-top: var(--s-7); padding-block: var(--s-5) var(--s-6); border-top: 1px solid var(--border); color: var(--muted); font-size: var(--fs-14); }
+.foot-more { margin-top: var(--s-4); color: var(--text); font-weight: 600; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 0 var(--s-5); margin: var(--s-1) 0 0; padding: 0; list-style: none; }
+.foot-links a { display: inline-block; padding-block: var(--s-2); }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(var(--s-4) + env(safe-area-inset-bottom)); z-index: var(--z-toast);

@@ -1,0 +1,16 @@
+# PasteSafe
+
+> A free browser tool that masks API keys, passwords and personal data (PII) in logs, stack traces and configs before you paste them into ChatGPT or other AI.
+
+PasteSafe scans pasted or dropped text with more than 200 secret rules from gitleaks, plus checks for private keys, JWTs, Bearer headers, passwords in URLs and connection strings, .env values, emails, IPv4 and IPv6 addresses, card numbers (Luhn check), IBANs (checksum) and phone numbers. Each unique value becomes a stable placeholder such as AWS_ACCESS_KEY_1 or EMAIL_2, so the AI's answer still makes sense, and placeholders in the AI's reply can be turned back into the real values.
+
+Everything runs in the browser, in a Web Worker with no network code. The page's Content Security Policy forbids network connections, nothing is stored (no cookies, local storage or accounts), and the placeholder map lives only in the tab's memory. After the first visit it also works offline.
+
+Known key formats are caught reliably. Plain passwords, names and street addresses in free text can slip through, so read the cleaned text before pasting it. The source is MIT licensed.
+
+## Links
+
+- [PasteSafe](https://pastesafe.vibe-coding.fans/): the live tool
+- [FAQ](https://pastesafe.vibe-coding.fans/#faq): masking PII and API keys in logs, and pasting logs into ChatGPT safely
+- [Source on GitHub](https://github.com/qxZap/pastesafe): MIT License
+- [vibe-coding.fans](https://vibe-coding.fans/): more free tools from the same makers
